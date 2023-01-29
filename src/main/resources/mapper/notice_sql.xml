@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bicycle.project.oauthlogin.domain.notice.NoticeDao">
+
+    <select id="getBoard" parameterType="com.bicycle.project.oauthlogin.domain.notice.dto.NoticeListReq"
+            resultType="com.bicycle.project.oauthlogin.domain.notice.dto.NoticeList">
+        SELECT title,content,
+               updated_at as updatedAt
+        FROM
+            notice_board
+        where title like CONCAT('%', #{contains}, '%')
+        order by updated_at desc limit 11 offset #{page}
+    </select>
+
+    <select id="getSumBoard" parameterType="com.bicycle.project.oauthlogin.domain.notice.dto.NoticeListReq"
+            resultType="Integer">
+        select count(*)
+        from (SELECT title,
+                     content,
+                     updated_at as updatedAt
+              FROM notice_board
+              where title like CONCAT('%', #{contains}, '%')
+              order by updated_at desc
+             )as a
+    </select>
+
+    <select id="getBoardDetail" resultType="com.bicycle.project.oauthlogin.domain.notice.dto.NoticeList">
+        select
+            title,
+            content,
+            updated_at as updatedAt
+        from notice_board
+        where
+            notice_board_id = #{boardId}
+    </select>
+
+
+
+
+
+
+</mapper>

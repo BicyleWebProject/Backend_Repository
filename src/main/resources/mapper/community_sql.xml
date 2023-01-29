@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bicycle.project.oauthlogin.domain.community.CommunityDao">
+
+    <select id="getTopList" resultType="com.bicycle.project.oauthlogin.domain.community.dto.TopListDto">
+        select
+            c.title,count(community_like_id) as total,
+            c.community_Id as communityId,
+            c.category_Id as categoryId
+        from community_like cl, community c
+        where
+            cl.community_id = c.community_id
+        group by cl.community_id
+        order by total desc limit 5
+    </select>
+
+    <insert id="writeCommunity" parameterType="com.bicycle.project.oauthlogin.domain.community.dto.CommunityWritingReq">
+        insert into
+            community(title, content, user_id,community_image_url, status,created_at,updated_at)
+        values (#{title}, #{content}, #{userId}, #{communityImageUrl}, #{status}, #{createdAt}, #{updatedAt})
+    </insert>
+
+
+    <select id="getCommunityDetail" resultType="com.bicycle.project.oauthlogin.domain.community.dto.CommunityDetailRes">
+        select
+            c.title as title,
+            u.username as userNickname,
+            c.community_image_url as communityImageUrl,
+            c.content as content,
+            u.profile_image_url as userImageUrl,
+            c.created_at as createdAt,
+            u.user_idx as userId,
+            count(cl.community_like_id) as total
+        from community c,
+             user u,
+             community_like cl
+        where
+            c.user_id = u.user_idx
+          and c.community_id = cl.community_id
+          and c.community_id= #{communityId}
+        group by c.community_id
+    </select>
+
+
+    <insert id="pushCommunityLike" parameterType="com.bicycle.project.oauthlogin.domain.community.dto.CommunityLikeReq">
+        insert into community_like( created_at, status, updated_at, community_id, user_id) values
+            (#{createdAt}, #{status}, #{updatedAt}, #{communityId}, #{userId})
+    </insert>
+
+
+    <update id="updateCommunity" parameterType="com.bicycle.project.oauthlogin.domain.community.dto.UpdateCommunityReq">
+        update community
+        set  content = #{content}
+          ,updated_at = #{updatedAt}
+          , content = #{content}
+          , title = #{title}
+          , category_id = #{categoryId}
+        where community_id = #{communityId}
+    </update>
+
+    <delete id="deleteCommunityLike" >
+        delete
+        from community_like
+        where community_id = #{communityId}
+    </delete>
+
+    <delete id="deleteCommunity" >
+        delete from community
+        where community_id = #{communityId}
+    </delete>
+
+
+
+
+
+
+
+
+</mapper>

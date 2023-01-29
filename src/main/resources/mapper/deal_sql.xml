@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bicycle.project.oauthlogin.domain.deal.DealDao">
+
+    <select id="getTopList" resultType="com.bicycle.project.oauthlogin.domain.deal.dto.GetTopListRes">
+        select d.title as title
+                ,count(dl.deal_like_id) as total,
+               d.deal_Id as dealId,
+               d.category_Id as categoryId
+        from deal d, deal_like dl
+        where
+            d.deal_id = dl.deal_id
+        group by dl.deal_id
+        order by total desc limit 5
+    </select>
+
+
+    <insert id="writeDeal" parameterType="com.bicycle.project.oauthlogin.domain.deal.dto.WritingDealReq">
+        insert into deal( created_at, status, updated_at, content, price, title, category_id, user_id, image_url1, image_url2,image_url3)
+        values ( #{createdAt}, #{status}, #{updatedAt}, #{content}, #{price}, #{title}, #{categoryId}, #{userId}, #{imageUrl1}, #{imageUrl2}, #{imageUrl3})
+    </insert>
+
+
+
+
+    <select id="getDealDetail" resultType="com.bicycle.project.oauthlogin.domain.deal.dto.GetDealDetailRes">
+        select
+            d.title,
+            u.username as userNickname,
+            d.image_url1 as imageUrl1,
+            d.image_url2 as imageUrl2,
+            d.image_url3 as imageUrl3,
+            d.content as content,
+            d.price as price,
+            u.profile_image_url as userImageUrl,
+            u.user_idx as userId,
+            lf.total
+        from
+            deal d
+                inner join user u on d.user_id = u.user_idx
+                left join (select
+                               ifnull(count(dl.deal_like_id),0) as total,
+                               dl.deal_id
+                           from deal_like dl
+                           group by dl.deal_id)as lf on d.deal_id = lf.deal_id
+        where
+            d.deal_id = #{dealId}
+    </select>
+
+
+    <insert id="pushDealLike" parameterType="com.bicycle.project.oauthlogin.domain.deal.dto.DealLikeReq">
+        insert into deal_like( created_at, status, updated_at, deal_id, user_id) values
+            (#{createdAt}, #{status}, #{updatedAt}, #{dealId}, #{userId})
+    </insert>
+
+
+    <insert id="updateDeal" parameterType="com.bicycle.project.oauthlogin.domain.deal.dto.UpdateDealReq">
+        update deal
+        set updated_at = #{updatedAt},
+            content = #{content},
+            price = #{price},
+            title = #{title},
+            category_id = #{categoryId}
+        where
+            deal_id = #{dealId}
+    </insert>
+
+    <delete id="deleteDealLike">
+        delete from deal_like
+        where deal_id = #{dealId}
+    </delete>
+
+    <delete id="deleteDeal">
+        delete from deal
+        where deal_id = #{dealId}
+    </delete>
+
+
+
+
+
+
+
+</mapper>

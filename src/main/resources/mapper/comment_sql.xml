@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bicycle.project.oauthlogin.domain.comment.CommentDao">
+
+    <select id="getComments" resultType="com.bicycle.project.oauthlogin.domain.comment.dto.GetCommentsRes">
+        select
+            c.community_id as communityId,
+            u.username as userNickname,
+            u.user_idx as userId,
+            cm.text as content,
+            cm.updated_at as updatedAt,
+            u.profile_image_url as userImageUrl,
+            cm.comment_id as commentId
+        from
+            community c, comment cm, user u
+        where
+            c.community_id = #{communityId}
+          and c.community_id = cm.community_id
+          and c.user_id = u.user_idx
+    </select>
+
+
+    <select id="getReplies" parameterType="com.bicycle.project.oauthlogin.domain.comment.dto.GetReplyReq" resultType="com.bicycle.project.oauthlogin.domain.comment.dto.GetReplyRes">
+        select
+            cm.comment_id as commentId,
+            c.community_id as communityId,
+            r.user_id as userId,
+            r.content as content,
+            u.profile_image_url as userImageUrl,
+            r.reply_id as replyId
+        from community c,
+             reply r,
+             comment cm,
+             user u
+        where
+            c.community_id = r.community_id
+          and cm.comment_id = r.comment_id
+          and r.user_id = u.user_idx
+          and r.community_id = #{communityId}
+          and r.comment_id = #{commentId}
+        order by r.updated_at desc
+    </select>
+
+    <delete id="deleteReply">
+        delete from reply
+        where community_id = #{communityId}
+    </delete>
+
+    <delete id="deleteComment">
+        delete from comment
+        where community_id = #{communityId}
+    </delete>
+
+
+
+
+
+
+</mapper>

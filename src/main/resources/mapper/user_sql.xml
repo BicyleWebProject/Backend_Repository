@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bicycle.project.oauthlogin.domain.user.UserDao">
+
+    <select id="getNote1" parameterType="com.bicycle.project.oauthlogin.domain.user.dto.GetUserComReq"
+            resultType="com.bicycle.project.oauthlogin.domain.user.dto.GetUserComRes">
+        select
+            if(c.title is null,'0','커뮤니티') as noteCategory,
+            u.username as userNickname,
+            u.profile_image_url as userImageUrl,
+            c.title,
+            c.updated_at as updatedAt,
+            ifnull(total,0) as total
+        from
+            community c
+                inner join user u on c.user_id = u.user_idx
+                left join (
+                select cl.community_id, ifnull(count(community_like_id),0) as total
+                from community_like cl
+                group by cl.community_id) as cli on ( c.community_id= cli.community_id)
+        where
+            c.user_id = #{userId}
+        union
+        select
+            if(d.title is null,'0','거래') as noteCategory,
+            u.username as userNickname,
+            u.profile_image_url as userImageUrl,
+            d.title,
+            d.updated_at as updatedAt,
+            ifnull(total,0) as total
+        from
+            deal d
+                inner join user u on d.user_id = u.user_idx
+                left join (select
+                               dl.deal_id,
+                               count(deal_like_id) as total
+                           from
+                               deal_like dl
+                           group by deal_id) dli on d.deal_id = dli.deal_id
+        where
+            d.user_Id = #{userId}
+        order by noteCategory, total desc
+            limit 11 offset #{page}
+    </select>
+
+    <select id="getNote2" parameterType="com.bicycle.project.oauthlogin.domain.user.dto.GetUserComReq"
+            resultType="com.bicycle.project.oauthlogin.domain.user.dto.GetUserComRes">
+        select
+            if(c.title is null,'0','커뮤니티') as noteCategory,
+            u.username as userNickname,
+            u.profile_image_url as userImageUrl,
+            c.title,
+            c.updated_at as updatedAt,
+            ifnull(total,0) as total
+        from
+            community c
+                inner join user u on c.user_id = u.user_idx
+                left join (
+                select cl.community_id, ifnull(count(community_like_id),0) as total
+                from community_like cl
+                group by
+                    cl.community_id) as cli on ( c.community_id= cli.community_id)
+        where
+                c.community_id in(select distinct
+                                      cm.community_id
+                                  from
+                                      user u, comment cm
+                                  where
+                                      cm.user_id = u.user_idx
+                                    and u.user_idx = #{userId}
+                                  union
+                                  select distinct r.community_id
+                                  from
+                                      reply r, user u
+                                  where  r.user_id = u.user_idx
+                                    and u. user_idx = #{userId}
+                                  order by community_id)
+        order by c.community_id
+            limit 11 offset #{page}
+    </select>
+
+
+    <select id="getNote3" parameterType="com.bicycle.project.oauthlogin.domain.user.dto.GetUserComReq"
+            resultType="com.bicycle.project.oauthlogin.domain.user.dto.GetUserComRes">
+        select
+            if(c.title is null,'0','커뮤니티') as noteCategory,
+            u.username as userNickname,
+            u.profile_image_url as userImageUrl,
+            c.title,
+            c.updated_at as updatedAt,
+            ifnull(total,0) as total
+        from
+            community c
+                inner join user u on c.user_id = u.user_idx
+                left join (
+                select cl.community_id, ifnull(count(community_like_id),0) as total
+                from community_like cl
+                group by
+                    cl.community_id) as cli on ( c.community_id= cli.community_id)
+        where
+                c.community_id in (select
+                                       distinct cl.community_id
+                                   from
+                                       community_like cl, user u
+                                   where
+                                       cl.user_id = u.user_idx
+                                     and u.user_idx = #{userId})
+        union
+        select
+            if(d.title is null,'0','거래') as noteCategory,
+            u.username as userNickname,
+            u.profile_image_url as userImageUrl,
+            d.title ,
+            d.updated_at as updatedAt,
+            ifnull(total,0) as total
+        from
+            deal d
+                inner join user u on d.user_id = u.user_idx
+                left join (select
+                               dl.deal_id,
+                               count(deal_like_id) as total
+                           from
+                               deal_like dl
+                           group by deal_id) dli on d.deal_id = dli.deal_id
+        where d.deal_id in (select
+                                distinct dl.deal_id
+                            from
+                                deal_like dl, user u
+                            where
+                                dl.user_id = u.user_idx
+                              and u.user_idx =  #{userId})
+        order by noteCategory, total desc
+            limit 11 offset #{page}
+    </select>
+
+
+    <select id="getSumNote1" parameterType="com.bicycle.project.oauthlogin.domain.user.dto.GetUserComReq"
+            resultType="Integer">
+        select count(*)
+        from (
+                 select
+                     if(c.title is null,'0','커뮤니티') as noteCategory,
+                     u.username as userNickname,
+                     u.profile_image_url as userImageUrl,
+                     c.title,
+                     c.updated_at as updatedAt,
+                     ifnull(total,0) as total
+                 from
+                     community c
+                         inner join user u on c.user_id = u.user_idx
+                         left join (
+                         select cl.community_id, ifnull(count(community_like_id),0) as total
+                         from community_like cl
+                         group by cl.community_id) as cli on ( c.community_id= cli.community_id)
+                 where
+                     c.user_id = #{userId}
+                 union
+                 select
+                     if(d.title is null,'0','거래') as noteCategory,
+                     u.username as userNickname,
+                     u.profile_image_url as userImageUrl,
+                     d.title,
+                     d.updated_at as updatedAt,
+                     ifnull(total,0) as total
+                 from
+                     deal d
+                         inner join user u on d.user_id = u.user_idx
+                         left join (select
+                                        dl.deal_id,
+                                        count(deal_like_id) as total
+                                    from
+                                        deal_like dl
+                                    group by deal_id) dli on d.deal_id = dli.deal_id
+                 where
+                     d.user_Id = #{userId}
+                 order by noteCategory, total desc
+             ) as a
+    </select>
+
+
+    <select id="getSumNote2" parameterType="com.bicycle.project.oauthlogin.domain.user.dto.GetUserComReq"
+            resultType="Integer">
+        select COUNT(*)
+        from (
+                 select
+                     if(c.title is null,'0','커뮤니티') as noteCategory,
+                     u.username as userNickname,
+                     u.profile_image_url as userImageUrl,
+                     c.title,
+                     c.updated_at as updatedAt,
+                     ifnull(total,0) as total
+                 from
+                     community c
+                         inner join user u on c.user_id = u.user_id
+                         left join (
+                         select cl.community_id, ifnull(count(community_like_id),0) as total
+                         from community_like cl
+                         group by
+                             cl.community_id) as cli on ( c.community_id= cli.community_id)
+                 where
+                         c.community_id in(select distinct
+                                               cm.community_id
+                                           from
+                                               user u, comment cm
+                                           where
+                                               cm.user_id = u.user_idx
+                                             and u.user_idx = #{userId}
+                                           union
+                                           select distinct r.community_id
+                                           from
+                                               reply r, user u
+                                           where  r.user_id = u.user_idx
+                                             and u.user_idx = #{userId}
+                                           order by community_id)
+                 order by c.community_id
+             ) as a
+    </select>
+
+
+    <select id="getSumNote3" parameterType="com.bicycle.project.oauthlogin.domain.user.dto.GetUserComReq"
+            resultType="Integer">
+        select COUNT(*)
+        from (
+                 select
+                     if(c.title is null,'0','커뮤니티') as noteCategory,
+                     u.username as userNickname,
+                     u.profile_image_url as userImageUrl,
+                     c.title,
+                     c.updated_at as updatedAt,
+                     ifnull(total,0) as total
+                 from
+                     community c
+                         inner join user u on c.user_id = u.user_idx
+                         left join (
+                         select cl.community_id, ifnull(count(community_like_id),0) as total
+                         from community_like cl
+                         group by
+                             cl.community_id) as cli on ( c.community_id= cli.community_id)
+                 where
+                         c.community_id in (select
+                                                distinct cl.community_id
+                                            from
+                                                community_like cl, user u
+                                            where
+                                                cl.user_id = u.user_idx
+                                              and u.user_idx = #{userId})
+                 union
+                 select
+                     if(d.title is null,'0','거래') as noteCategory,
+                     u.username as userNickname,
+                     u.profile_image_url as userImageUrl,
+                     d.title ,
+                     d.updated_at as updatedAt,
+                     ifnull(total,0) as total
+                 from
+                     deal d
+                         inner join user u on d.user_id = u.user_idx
+                         left join (select
+                                        dl.deal_id,
+                                        count(deal_like_id) as total
+                                    from
+                                        deal_like dl
+                                    group by deal_id) dli on d.deal_id = dli.deal_id
+                 where d.deal_id in (select
+                                         distinct dl.deal_id
+                                     from
+                                         deal_like dl, user u
+                                     where
+                                         dl.user_id = u.user_idx
+                                       and u.user_idx =  #{userId})
+                 order by noteCategory, total desc
+             ) as a
+    </select>
+
+
+
+
+
+
+</mapper>
