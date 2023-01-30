@@ -5,6 +5,7 @@ package com.bicycle.project.oauthlogin.domain.community;
 import com.bicycle.project.oauthlogin.config.RegularException;
 import com.bicycle.project.oauthlogin.config.RegularResponse;
 import com.bicycle.project.oauthlogin.domain.community.dto.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,12 +41,31 @@ public class CommunityController {
     }
 
 
-    @ResponseBody
-    @PostMapping("/writing")
-    public RegularResponse<String> writeCommunity(@RequestPart(value = "communityWritingReq") CommunityWritingReq communityWritingReq,
-                                                  @RequestPart(value = "images")MultipartFile multipartFile){
+//    @ResponseBody
+//    @PostMapping("/writing")
+//    public RegularResponse<String> writeCommunity(@RequestPart(value = "communityWritingReq") CommunityWritingReq communityWritingReq,
+//                                                  @RequestPart(value = "images")MultipartFile multipartFile){
+//
+//        try {
+//            String imageUrls=null;
+//            if(!multipartFile.getOriginalFilename().equals("")) {
+//                imageUrls = communityService.uploadS3image(multipartFile, communityWritingReq.getUserId());
+//                communityWritingReq.setCommunityImageUrl(imageUrls);
+//            }else
+//                communityWritingReq.setCommunityImageUrl(null);
+//            communityService.writeCommunity(communityWritingReq);
+//            return new RegularResponse<>(new String("게시글 등록에 성공하였습니다. 등록된 이미지url: "+imageUrls));
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return new RegularResponse<>(new String("게시글 등록에 실패하였습니다."));
+//        }
+//    }
 
+    @PostMapping("/writing")
+    public RegularResponse<String> writeCommunity(@RequestPart(value = "multipartFile")MultipartFile multipartFile,
+                                                  @RequestPart(value = "communityWritingReqDto") String communityWritingReqDto){
         try {
+            CommunityWritingReq communityWritingReq = new ObjectMapper().readValue(communityWritingReqDto, CommunityWritingReq.class);
             String imageUrls=null;
             if(!multipartFile.getOriginalFilename().equals("")) {
                 imageUrls = communityService.uploadS3image(multipartFile, communityWritingReq.getUserId());
@@ -59,6 +79,7 @@ public class CommunityController {
             return new RegularResponse<>(new String("게시글 등록에 실패하였습니다."));
         }
     }
+
 
     @GetMapping("/getCommunityDetail/{communityId}")
     public RegularResponse<CommunityDetailRes> getCommunityDetail(@PathVariable Integer communityId){
