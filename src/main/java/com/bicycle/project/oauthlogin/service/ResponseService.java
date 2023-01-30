@@ -49,6 +49,7 @@ public class ResponseService {
         result.setSuccess(true);
         result.setCode(CommonResponse.SUCCESS.getCode());
         result.setMsg(CommonResponse.SUCCESS.getMsg());
+
     }
 
     // API 요청 실패 시 응답 모델을 실패 데이터로 세팅

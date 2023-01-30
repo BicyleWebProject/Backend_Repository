@@ -1,6 +1,8 @@
 package com.bicycle.project.oauthlogin.controller.auth.dto;
 
+import com.bicycle.project.oauthlogin.data.entity.User;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -12,12 +14,15 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class LoginDto {
 
-    //사이즈 변경 가능
-    @NotNull
-    @Size(min=50, max=100)
+
     private String userEmail;
 
-    @NotNull
-    @Size(min=50, max=100)
     private String password;
+
+    public User toUser(PasswordEncoder passwordEncoder){
+        return User.builder()
+                .userEmail(userEmail)
+                .password(passwordEncoder.encode(password))
+                .build();
+    }
 }

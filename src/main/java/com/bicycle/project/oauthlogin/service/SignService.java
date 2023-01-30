@@ -1,5 +1,7 @@
 package com.bicycle.project.oauthlogin.service;
 
+import com.bicycle.project.oauthlogin.Type.RoleType;
+import com.bicycle.project.oauthlogin.common.Role;
 import com.bicycle.project.oauthlogin.config.security.CustomAuthenticationEntryPoint;
 import com.bicycle.project.oauthlogin.config.security.TokenProvider;
 import com.bicycle.project.oauthlogin.controller.auth.dto.*;
@@ -22,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class SignService {
-
+    //securityService와 같음
 //    SignUpResultDto signUp(String userEmail, String password, String name, String role);
 //
 //    SignInResultDto signIn(String userEmail, String password) throws RuntimeException;
@@ -33,11 +35,12 @@ public class SignService {
     private final RefreshTokenJpaRepo tokenJpaRepo;
 
     @Transactional
-    public TokenDto signIn(SignInRequestDto signInRequestDto){
-
+    public TokenDto signIn(LoginDto signInRequestDto){
+        //public TokenDto signIn(SignInRequestDto signInRequestDto
         User user = userRepository.findByUserEmail(signInRequestDto.getUserEmail())
                 .orElseThrow(CEmailLoginFailedException::new);
 
+        log.info(String.format("dto : %s , user : %s", signInRequestDto.getPassword(), user.getPassword()));
         if(!passwordEncoder.matches(signInRequestDto.getPassword(), user.getPassword()))
             throw new CEmailLoginFailedException();
 
@@ -55,6 +58,7 @@ public class SignService {
     public Long signUp(SignUpRequestDto signUpRequestDto){
         if(userRepository.findByUserEmail(signUpRequestDto.getUserEmail()).isPresent())
             throw new CEmailLoginFailedException();
+        signUpRequestDto.setRoles(Role.ROLE_USER);
         return userRepository.save(signUpRequestDto.toEntity(passwordEncoder)).getUserIdx();
     }
 
@@ -70,7 +74,7 @@ public class SignService {
 
         User user = userRepository.findByUserIdx(Long.parseLong(authentication.getName()))
                 .orElseThrow(CUserNotFoundException::new);
-        UserRefreshToken refreshToken = tokenJpaRepo.findByKey(user.getUserIdx())
+        UserRefreshToken refreshToken = tokenJpaRepo.findByUserKey(user.getUserIdx())
                 .orElseThrow(CRefreshTokenException::new);
 
         if(!refreshToken.getToken().equals(tokenRequestDto.getRefreshToken()))

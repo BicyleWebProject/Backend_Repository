@@ -1,5 +1,6 @@
 package com.bicycle.project.oauthlogin.controller.auth.dto;
 
+import com.bicycle.project.oauthlogin.common.Role;
 import com.bicycle.project.oauthlogin.data.entity.User;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +19,8 @@ public class SignUpRequestDto {
     private String password;
 
     private String username;
-    private String provider;
+
+    private Role roles;
 
     public User toEntity(PasswordEncoder passwordEncoder){
         return User.builder()
@@ -34,7 +36,6 @@ public class SignUpRequestDto {
         return User.builder()
                 .userEmail(userEmail)
                 .username(username)
-                .provider(provider)
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build();
     }
