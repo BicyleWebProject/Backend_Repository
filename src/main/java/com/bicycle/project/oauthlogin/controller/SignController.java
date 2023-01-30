@@ -42,10 +42,13 @@ public class SignController {
     @PostMapping("/sign-in")
     public SingleResult<TokenDto> signIn(
             @ApiParam(value="login-dto", required = true)
-            @RequestBody SignInRequestDto signInRequestDto){
+            @RequestBody LoginDto signInRequestDto){
 
         LOGGER.info("로그인 과정입니다.");
+        //한번 출력
+        LOGGER.info(String.valueOf(signInRequestDto.getUserEmail()) + 1);
         TokenDto tokenDto = signService.signIn(signInRequestDto);
+        LOGGER.info(String.valueOf(signInRequestDto.getUserEmail()) + 2);
         return responseService.getSingleResult(tokenDto);
     }
 

@@ -61,17 +61,19 @@ public class SignServiceImpl /*implements SignService*/ {
     public Long signup(SignUpRequestDto userSignupDto) {
         if (userJpaRepo.findByUserEmail(userSignupDto.getUserEmail()).isPresent())
             throw new CEmailSignupFailedException();
+
+        LOGGER.info(String.valueOf(userSignupDto.getRoles()) + "abc");
         return userJpaRepo.save(userSignupDto.toEntity(passwordEncoder)).getUserIdx();
     }
 
-    @Transactional
-    public Long socialSignup(SignUpRequestDto userSignupRequestDto) {
-        if (userJpaRepo
-                .findByUserEmailAndProvider(userSignupRequestDto.getUserEmail(), userSignupRequestDto.getProvider())
-                .isPresent()
-        ) throw new CUserExistException();
-        return userJpaRepo.save(userSignupRequestDto.toEntity()).getUserIdx();
-    }
+//    @Transactional
+//    public Long socialSignup(SignUpRequestDto userSignupRequestDto) {
+//        if (userJpaRepo
+//                .findByUserEmailAndProvider(userSignupRequestDto.getUserEmail(), userSignupRequestDto.getProvider())
+//                .isPresent()
+//        ) throw new CUserExistException();
+//        return userJpaRepo.save(userSignupRequestDto.toEntity()).getUserIdx();
+//    }
 
     @Transactional
     public TokenDto reissue(TokenRequestDto tokenRequestDto) throws CustomAuthenticationEntryPoint {
@@ -87,7 +89,7 @@ public class SignServiceImpl /*implements SignService*/ {
         // user pk로 유저 검색 / repo 에 저장된 Refresh Token 이 없음
         User user = userJpaRepo.findById(Long.parseLong(authentication.getName()))
                 .orElseThrow(CUserNotFoundException::new);
-        UserRefreshToken refreshToken = tokenJpaRepo.findByKey(user.getUserIdx())
+        UserRefreshToken refreshToken = tokenJpaRepo.findByUserKey(user.getUserIdx())
                 .orElseThrow(CRefreshTokenException::new);
 
         // 리프레시 토큰 불일치 에러

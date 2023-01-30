@@ -24,15 +24,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig  {
 
 
     private final TokenProvider tokenProvider;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
 
 
     @Autowired
-    public SecurityConfig(TokenProvider jwtTokenProvider){
+    public SecurityConfig(TokenProvider jwtTokenProvider, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint){
         this.tokenProvider = jwtTokenProvider;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
 //    @Override
@@ -72,15 +78,42 @@ public class SecurityConfig  {
 //                "/swagger-ui.html", "/webjars/**", "/swagger/**", "/sign-api/exception");
 //    }
 
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+//        http.csrf().disable();
+//        http.authorizeRequests()
+//                //.antMatchers("/sign-api/sign-in", "/sign-api/sign-up","/sign-api/exception") //이부분은 권한 설정. 나중에 바꿔줄 수 있음
+//                .anyRequest().permitAll();
+//
+//        return http.build();
+//
+//    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.csrf().disable();
-        http.authorizeRequests()
-                //.antMatchers("/sign-api/sign-in", "/sign-api/sign-up","/sign-api/exception") //이부분은 권한 설정. 나중에 바꿔줄 수 있음
-                .anyRequest().permitAll();
+//        http.cors().and().csrf().disable();
+//        http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers(HttpMethod.POST,"/sign-in", "/sign-up",
+//                        "/sign-api/sign-in", "/sign-api/sign-up").permitAll()
+//                .anyRequest().hasRole("USER");
+//        return http.build();
+        http
+                .httpBasic().disable()
+                .csrf().disable()
 
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/sign-api/sign-up", "/sign-api/sign-in",
+                        "/sign-api/reissue", "/v1/social/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/oauth/kakao/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/exception/**").permitAll()
+                .anyRequest().hasRole("USER");
         return http.build();
-
     }
 
     @Bean

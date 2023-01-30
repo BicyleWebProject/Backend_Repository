@@ -7,21 +7,22 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "USER_REFRESH_TOKEN")
-public class UserRefreshToken {
+@Getter
+@NoArgsConstructor
+@Table(name = "refresh_token")
+public class UserRefreshToken extends  BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long refresh_token_id;
+//    private String id;
 
-    @Column(nullable = false)
-    private Long key;
+
+    @Column(nullable = false) //userIdx 저장
+    private Long userKey;
 
     @Column(nullable = false)
     private String token;
@@ -33,7 +34,22 @@ public class UserRefreshToken {
 
     @Builder
     public UserRefreshToken(Long key, String token) {
-        this.key = key;
+        this.userKey = key;
         this.token = token;
     }
+
+//    @Override
+//    public String getStatus() {
+//        return super.getStatus();
+//    }
+//
+//    @Override
+//    public LocalDateTime getCreatedAt() {
+//        return super.getCreatedAt();
+//    }
+//
+//    @Override
+//    public LocalDateTime getUpdatedAt() {
+//        return super.getUpdatedAt();
+//    }
 }
