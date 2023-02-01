@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bicycle.project.oauthlogin.domain.message.MessageDao">
+
+
+    <insert id="writeMessage" parameterType="com.bicycle.project.oauthlogin.domain.message.dto.WriteMessageReq">
+        insert into message( receiver_id, sender_id, message_content, is_checked, status, created_at, updated_at)
+        values (#{receiverId}, #{senderId}, #{messageContent}, 'N', #{status}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <select id="getNotReads" resultType="Long">
+        select
+            count(receiver_id) as counts
+        from message
+        where receiver_id = #{userIdx}
+    </select>
+
+
+
+</mapper>
