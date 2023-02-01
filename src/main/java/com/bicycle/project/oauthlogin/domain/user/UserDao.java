@@ -1,6 +1,7 @@
 package com.bicycle.project.oauthlogin.domain.user;
 
 
+import com.bicycle.project.oauthlogin.domain.user.dto.GetOtherRes;
 import com.bicycle.project.oauthlogin.domain.user.dto.GetUserComReq;
 import com.bicycle.project.oauthlogin.domain.user.dto.GetUserComRes;
 import org.apache.ibatis.annotations.Mapper;
@@ -21,4 +22,6 @@ public interface UserDao {
     public int getSumNote2(GetUserComReq getUserComReq);
 
     public int getSumNote3(GetUserComReq getUserComReq);
+
+    GetOtherRes getOthers(Long userId);
 }

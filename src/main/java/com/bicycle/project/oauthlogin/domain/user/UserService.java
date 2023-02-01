@@ -2,11 +2,9 @@ package com.bicycle.project.oauthlogin.domain.user;
 
 
 import com.bicycle.project.oauthlogin.config.RegularException;
+import com.bicycle.project.oauthlogin.config.RegularResponseStatus;
 import com.bicycle.project.oauthlogin.data.entity.User;
-import com.bicycle.project.oauthlogin.domain.user.dto.GetUserComReq;
-import com.bicycle.project.oauthlogin.domain.user.dto.GetUserComRes;
-import com.bicycle.project.oauthlogin.domain.user.dto.UserRequestDto;
-import com.bicycle.project.oauthlogin.domain.user.dto.UserResponseDto;
+import com.bicycle.project.oauthlogin.domain.user.dto.*;
 import com.bicycle.project.oauthlogin.exception.CUserNotFoundException;
 import com.bicycle.project.oauthlogin.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -81,6 +79,7 @@ public class UserService {
     }
 
 
+    @Transactional
     public List<GetUserComRes> getNote(GetUserComReq getUserComReq) throws RegularException {
         try {
             List<GetUserComRes> result = new ArrayList<>();
@@ -103,6 +102,7 @@ public class UserService {
     }
 
 
+    @Transactional
     public int getSumNote(GetUserComReq getUserComReq) {
 
         int result=0;
@@ -117,4 +117,15 @@ public class UserService {
     }
 
 
+
+    @Transactional
+    public GetOtherRes getOthers(Long userId) throws RegularException{
+        try {
+            GetOtherRes result = userDao.getOthers(userId);
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw  new RegularException(RegularResponseStatus.REQUEST_ERROR);
+        }
+    }
 }
