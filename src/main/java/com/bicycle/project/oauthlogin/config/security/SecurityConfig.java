@@ -109,14 +109,19 @@ public class SecurityConfig  {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/sign-api/sign-up", "/sign-api/sign-in",
-                        "/sign-api/reissue", "/v1/social/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/oauth/kakao/**").permitAll()
+                        "/sign-api/reissue", "/v1/social/**","/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/oauth/kakao/**", "/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/exception/**").permitAll()
+
                 .antMatchers(HttpMethod.GET, "/user/**").permitAll()
                 .antMatchers(HttpMethod.PUT, "/user/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/community/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/community/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/deal/**").permitAll()
+
+                .antMatchers(HttpMethod.DELETE,"/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**" ).permitAll()
+                .antMatchers(HttpMethod.PATCH,"/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**").permitAll()
+
                 .anyRequest().hasRole("USER");
         return http.build();
     }
