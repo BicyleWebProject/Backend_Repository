@@ -12,6 +12,8 @@ public interface CommunityDao {
 
     public List<TopListDto> getTopList();
 
+    public List<RecentListDto> getRecentList();
+
     public void writeCommunity(CommunityWritingReq communityWritingReq);
 
     CommunityDetailRes getCommunityDetail(Integer communityId);

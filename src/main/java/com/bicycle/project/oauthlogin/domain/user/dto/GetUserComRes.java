@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GetUserComRes {
 
-
+    private String userEmail;
     private String noteCategory;
     private String userNickname;
     private String userImageUrl;
