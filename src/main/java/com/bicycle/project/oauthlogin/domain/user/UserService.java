@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.bicycle.project.oauthlogin.config.RegularResponseStatus.REQUEST_ERROR;
@@ -53,6 +54,12 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
+    public boolean isThereUserEmail(String userEmail){
+        Optional<User> user = userRepository.findByUserEmail(userEmail);
+        if(user.isPresent()) return true; //존재하면 true
+        else return false;
+    }
+
     @Transactional(readOnly = true)
     public List<UserResponseDto> findAllUser(){
         return userRepository.findAll()
@@ -62,10 +69,10 @@ public class UserService {
     }
 
     @Transactional
-    public Long update(Long userIdx, UserRequestDto userRequestDto){
-        User modifiedUser = userRepository.findByUserIdx(userIdx)
+    public void update(String userEmail, UserRequestDto userRequestDto, String newName){
+        User modifiedUser = userRepository.findByUserEmail(userEmail)
                 .orElseThrow(CUserNotFoundException::new);
-        return userIdx;
+        modifiedUser.updateUsername(newName);
     }
 
     @Transactional
@@ -108,4 +115,6 @@ public class UserService {
         }
         return result;
     }
+
+
 }

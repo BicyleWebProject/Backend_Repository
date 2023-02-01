@@ -46,4 +46,6 @@ public class RegularResponse<T> {
         this.message = status.getMessage();
         this.code = status.getCode();
     }
+
+
 }
