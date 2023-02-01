@@ -27,6 +27,14 @@
 
     </select>
 
+    <select id="getFullRecentList" resultType="com.bicycle.project.oauthlogin.domain.deal.dto.GetFullRecentListRes">
+        select d.content as content, d.user_id as userEmail, d.image_url1 as imageUrl1, d.image_url2 as imageUrl2, d.image_url3 as imageUrl3,
+               d.price as price, d.title as title, d.updated_at as updatedAt, d.category_id as categoryId
+        from deal d left outer join user u on d.user_id = u.user_id
+        where d.category_id=#{categoryId}
+        order by d.updated_at desc limit 10 ;
+    </select>
+
 
 
     <insert id="writeDeal" parameterType="com.bicycle.project.oauthlogin.domain.deal.dto.WritingDealReq">

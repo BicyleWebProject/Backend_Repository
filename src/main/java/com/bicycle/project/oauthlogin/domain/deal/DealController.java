@@ -39,14 +39,26 @@ public class DealController {
 
     }
 
+    @GetMapping("/getFullRecentList/{categoryId}")
+    public RegularResponse<List<GetFullRecentListRes>> getFullRecentList(@PathVariable Long categoryId){
+        try{
+
+            List<GetFullRecentListRes> result = dealService.getFullRecentList(categoryId);
+            for(GetFullRecentListRes x : result){
+                logger.info("{}123", x);
+            }
+            return new RegularResponse<>(result);
+        }catch (RegularException e){
+            return new RegularResponse<>(e.getStatus());
+        }
+    }
+
     @GetMapping("/getRecentList/{userEmail}")
     public RegularResponse<List<RecentListDto>> getRecentList(@PathVariable String userEmail){
         try{
-            logger.info("{}", userEmail);
+
             List<RecentListDto> result = dealService.getRecentList(userEmail);
-            for(RecentListDto x : result){
-                logger.info("{}, test!", x);
-            }
+
             return new RegularResponse<>(result);
         }catch (RegularException e){
             return new RegularResponse<>(e.getStatus());
