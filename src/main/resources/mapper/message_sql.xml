@@ -20,7 +20,7 @@
 
     <select id="getConnectedUser" resultType="Hashmap">
         select
-            receiver_id as num
+            receiver_id as userId
         from message
         where sender_id = #{userId}
         union
