@@ -37,6 +37,11 @@
     </select>
 
 
+    <insert id="writeNotice" parameterType="com.bicycle.project.oauthlogin.domain.notice.dto.NoticeWritingReq">
+        insert into notice_board(created_at, status, updated_at, content, title, category_id, user_id)
+        values (#{createdAt},#{status},#{updatedAt},#{content},#{title},#{categoryId},#{userId})
+    </insert>
+
 
 
 
