@@ -109,8 +109,8 @@ public class SecurityConfig  {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/sign-api/sign-up", "/sign-api/sign-in",
-                        "/sign-api/reissue", "/v1/social/**","/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/oauth/kakao/**", "/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**").permitAll()
+                        "/sign-api/reissue", "/v1/social/**","/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**","/message/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/oauth/kakao/**", "/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**","/message/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/exception/**").permitAll()
 
                 .antMatchers(HttpMethod.GET, "/user/**").permitAll()
@@ -120,7 +120,7 @@ public class SecurityConfig  {
                 .antMatchers(HttpMethod.GET, "/deal/**").permitAll()
 
                 .antMatchers(HttpMethod.DELETE,"/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**" ).permitAll()
-                .antMatchers(HttpMethod.PATCH,"/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**").permitAll()
+                .antMatchers(HttpMethod.PATCH,"/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**","/message/**").permitAll()
 
                 .anyRequest().hasRole("USER");
         return http.build();
