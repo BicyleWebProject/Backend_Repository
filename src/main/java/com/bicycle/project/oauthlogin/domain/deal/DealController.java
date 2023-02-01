@@ -7,6 +7,8 @@ import com.bicycle.project.oauthlogin.config.RegularResponse;
 import com.bicycle.project.oauthlogin.config.RegularResponseStatus;
 import com.bicycle.project.oauthlogin.domain.community.CommunityService;
 import com.bicycle.project.oauthlogin.domain.deal.dto.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/deal")
 public class DealController {
-
+    Logger logger =  LoggerFactory.getLogger(DealController.class);
 
     @Autowired
     private CommunityService communityService;
@@ -35,6 +37,22 @@ public class DealController {
             return new RegularResponse<>(regularException.getStatus());
         }
 
+    }
+
+    @GetMapping("/getRecentList/{userEmail}")
+    public RegularResponse<List<RecentListDto>> getRecentList(@PathVariable String userEmail){
+        try{
+            logger.info("{}", userEmail);
+            List<RecentListDto> result = dealService.getRecentList(userEmail);
+            for(RecentListDto x : result){
+                logger.info("{}, test!", x);
+            }
+            return new RegularResponse<>(result);
+        }catch (RegularException e){
+            return new RegularResponse<>(e.getStatus());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @ResponseBody
