@@ -54,6 +54,16 @@ public class CommunityController {
         }
     }
 
+    @GetMapping("/userRecentList/{userEmail}")
+    public RegularResponse<List<GetUserRecentList>> getUserRecentList(@PathVariable("userEmail") String userEmail){
+        try{
+            List<GetUserRecentList> getUserRecentList = communityService.getUserRecentList(userEmail);
+            return new RegularResponse<>(getUserRecentList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new RegularResponse<>(new ArrayList<>());
+        }
+    }
 
 //    @ResponseBody
 //    @PostMapping("/writing")

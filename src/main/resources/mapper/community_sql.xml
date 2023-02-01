@@ -27,6 +27,19 @@
         order by updated_at desc limit 10
     </select>
 
+    <select id="getUserRecentList" resultType="com.bicycle.project.oauthlogin.domain.community.dto.GetUserRecentList">
+        select c.community_id as communityId,
+               c.updated_at as updatedAt,
+               c.content as content,
+               c.title as title,
+               c.category_id as categoryId,
+               u.user_id as userEmail,
+               c.community_image_url as communityImageUrl
+        from community c left outer join user u on c.user_id = u.user_id
+                        and c.user_id = #{userEmail}
+        order by c.updated_at desc limit 10;
+    </select>
+
     <insert id="writeCommunity" parameterType="com.bicycle.project.oauthlogin.domain.community.dto.CommunityWritingReq">
         insert into
             community(title, content, user_id,community_image_url, status,created_at,updated_at)

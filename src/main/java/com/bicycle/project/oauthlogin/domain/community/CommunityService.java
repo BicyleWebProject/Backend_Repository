@@ -8,6 +8,8 @@ import com.bicycle.project.oauthlogin.domain.comment.CommentDao;
 import com.bicycle.project.oauthlogin.domain.community.dto.*;
 import com.bicycle.project.oauthlogin.domain.s3.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.bicycle.project.oauthlogin.config.RegularResponseStatus.REQUEST_ERROR;
 
 @Transactional(readOnly = true)
 @Service
@@ -30,6 +34,7 @@ public class CommunityService {
     @Autowired
     public CommentDao commentDao;
 
+    Logger logger = LoggerFactory.getLogger(CommunityService.class);
     public List<TopListDto> getTopList(){
         List<TopListDto> getTopList = communityDao.getTopList();
         return getTopList;
@@ -38,6 +43,18 @@ public class CommunityService {
     public List<RecentListDto> getRecentList(){
         List<RecentListDto> getRecentList = communityDao.getRecentList();
         return getRecentList;
+    }
+
+    public List<GetUserRecentList> getUserRecentList(String userEmail) throws RegularException {
+        try{
+            List<GetUserRecentList> result = communityDao.getUserRecentList(userEmail);
+            logger.info("CommunityService test!");
+
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RegularException(REQUEST_ERROR);
+        }
     }
 
     @Transactional
@@ -63,7 +80,7 @@ public class CommunityService {
             return new String();
         }catch(Exception exception) {
             exception.printStackTrace();
-            throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
+            throw new RegularException(REQUEST_ERROR);
         }
     }
 
@@ -77,7 +94,7 @@ public class CommunityService {
             return new ArrayList<>();
         }catch(Exception exception) {
             exception.printStackTrace();
-            throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
+            throw new RegularException(REQUEST_ERROR);
         }
 
 
@@ -91,7 +108,7 @@ public class CommunityService {
             return new String("커뮤니티 좋아요 등록에 성공하였습니다.");
         }catch (Exception e){
             e.printStackTrace();
-            throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
+            throw new RegularException(REQUEST_ERROR);
         }
 
     }
@@ -103,7 +120,7 @@ public class CommunityService {
             return new String("커뮤니티 글이 수정되었습니다.");
         }catch (Exception e){
             e.printStackTrace();
-            throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
+            throw new RegularException(REQUEST_ERROR);
         }
     }
 
@@ -117,7 +134,7 @@ public class CommunityService {
             return new String("커뮤니티 글이 삭제되었습니다.");
         }catch (Exception e){
             e.printStackTrace();
-            throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
+            throw new RegularException(REQUEST_ERROR);
         }
 
     }
