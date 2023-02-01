@@ -23,7 +23,7 @@ public class CommunityController {
 
     @GetMapping("/ctest")
     public String ctest(){
-        return "커뮤니티테스트";
+        return "커뮤니티테스트수정1";
     }
 
     @GetMapping("/topList")
