@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -51,6 +53,8 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "USER_ID", length = 64, unique = true)
     @NotNull
     @Size(max = 64)
+//    @Email //Email 형식인지 자동으로 검사!
+//    @NotBlank(message = "Email은 필수 입력사항입니다")
     private String userEmail;
 
     @Column(name = "USERNAME", length = 100)
@@ -147,5 +151,8 @@ public class User extends BaseEntity implements UserDetails {
         return this.password;
     }
 
+    public void updateUsername(String newUsername){
+        this.username = newUsername;
+    }
 
 }

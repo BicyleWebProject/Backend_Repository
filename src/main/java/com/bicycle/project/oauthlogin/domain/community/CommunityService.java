@@ -35,6 +35,11 @@ public class CommunityService {
         return getTopList;
     }
 
+    public List<RecentListDto> getRecentList(){
+        List<RecentListDto> getRecentList = communityDao.getRecentList();
+        return getRecentList;
+    }
+
     @Transactional
     public void writeCommunity(CommunityWritingReq communityWritingReq) {
         communityWritingReq.setStatus("Y");

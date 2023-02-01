@@ -112,6 +112,10 @@ public class SecurityConfig  {
                         "/sign-api/reissue", "/v1/social/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/oauth/kakao/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/exception/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/user/**").permitAll()
+                .antMatchers(HttpMethod.PUT, "/user/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/community/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/community/**").permitAll()
                 .anyRequest().hasRole("USER");
         return http.build();
     }
