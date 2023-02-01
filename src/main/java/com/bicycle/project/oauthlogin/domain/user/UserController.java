@@ -6,10 +6,7 @@ import com.bicycle.project.oauthlogin.common.SingleResult;
 import com.bicycle.project.oauthlogin.config.RegularException;
 import com.bicycle.project.oauthlogin.config.RegularResponse;
 import com.bicycle.project.oauthlogin.data.entity.User;
-import com.bicycle.project.oauthlogin.domain.user.dto.GetUserComReq;
-import com.bicycle.project.oauthlogin.domain.user.dto.GetUserComRes;
-import com.bicycle.project.oauthlogin.domain.user.dto.UserRequestDto;
-import com.bicycle.project.oauthlogin.domain.user.dto.UserResponseDto;
+import com.bicycle.project.oauthlogin.domain.user.dto.*;
 import com.bicycle.project.oauthlogin.repository.UserRepository;
 import com.bicycle.project.oauthlogin.service.ResponseService;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +80,20 @@ public class UserController {
         logger.info("update 이후");
         return new RegularResponse<>(new String("유저 이름 변경이 완료되었습니다. {newUsername}"));
 
+    }
+
+    /*
+        31.상대정보조회, 학준
+     */
+    @GetMapping("/otherInfo/{userId}")
+    public RegularResponse<GetOtherRes> getOthers(@PathVariable @Valid Long userId){
+        try {
+            GetOtherRes result = userService.getOthers(userId);
+            return new RegularResponse<>(result);
+        }catch (RegularException regularException){
+            regularException.printStackTrace();
+            return new RegularResponse<>(new GetOtherRes());
+        }
     }
 
 }

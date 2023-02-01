@@ -274,6 +274,17 @@
              ) as a
     </select>
 
+    <select id="getOthers" resultType="com.bicycle.project.oauthlogin.domain.user.dto.GetOtherRes">
+        select
+            username,
+            user_id as email,
+            profile_image_url as profileImageUrl
+        from
+            user
+        where
+            user_idx = #{userId}
+    </select>
+
 
 
 
