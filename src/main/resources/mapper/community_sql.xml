@@ -16,6 +16,17 @@
         order by total desc limit 5
     </select>
 
+    <select id="getRecentList" resultType="com.bicycle.project.oauthlogin.domain.community.dto.RecentListDto">
+        select
+            c.title as title,
+            c.category_Id as categoryId,
+            c.user_id as userEmail,
+            c.content as content,
+            c.community_image_url as communityImageUrl
+        from community c
+        order by updated_at desc limit 10
+    </select>
+
     <insert id="writeCommunity" parameterType="com.bicycle.project.oauthlogin.domain.community.dto.CommunityWritingReq">
         insert into
             community(title, content, user_id,community_image_url, status,created_at,updated_at)

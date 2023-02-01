@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 public class GetUserComReq {
 
     private Long userId;
+    private String userEmail;
     private Integer noteCategory;
 
     @NotNull

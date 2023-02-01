@@ -40,6 +40,20 @@ public class CommunityController {
 
     }
 
+    /*
+    최근 커뮤니티게시글 조회
+     */
+    @GetMapping("/recentWrite")
+    public RegularResponse<List<RecentListDto>> recentList(){
+        try{
+            List<RecentListDto> getRecentList = communityService.getRecentList();
+            return new RegularResponse<>(getRecentList);
+        }catch(Exception e){
+            e.printStackTrace();
+            return new RegularResponse<>(new ArrayList<>());
+        }
+    }
+
 
 //    @ResponseBody
 //    @PostMapping("/writing")
