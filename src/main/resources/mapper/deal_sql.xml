@@ -16,6 +16,18 @@
         order by total desc limit 5
     </select>
 
+    <select id="getRecentList" resultType="com.bicycle.project.oauthlogin.domain.deal.dto.RecentListDto">
+        select u.user_id,d.title, d.deal_id,d.category_id,
+               d.image_url1, d.image_url2, d.image_url3, d.price
+        from deal d left outer join user u
+                                    on d.user_id = u.user_id
+        where u.user_id=#{userEmail}
+        order by d.updated_at
+                desc limit 10;
+
+    </select>
+
+
 
     <insert id="writeDeal" parameterType="com.bicycle.project.oauthlogin.domain.deal.dto.WritingDealReq">
         insert into deal( created_at, status, updated_at, content, price, title, category_id, user_id, image_url1, image_url2,image_url3)

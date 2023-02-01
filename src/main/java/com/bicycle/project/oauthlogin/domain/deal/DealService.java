@@ -3,6 +3,8 @@ package com.bicycle.project.oauthlogin.domain.deal;
 
 import com.bicycle.project.oauthlogin.config.RegularException;
 import com.bicycle.project.oauthlogin.domain.deal.dto.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import static com.bicycle.project.oauthlogin.config.RegularResponseStatus.REQUES
 @Service
 public class DealService {
 
+    Logger logger = LoggerFactory.getLogger(DealService.class);
     @Autowired
     private DealDao dealDao;
 
@@ -29,6 +32,18 @@ public class DealService {
            throw new RegularException(REQUEST_ERROR);
         }
 
+    }
+
+    public List<RecentListDto> getRecentList(String userEmail) throws Exception{
+        try{
+            List<RecentListDto> result = dealDao.getRecentList(userEmail);
+            logger.info("getRecentList 데이터 전달");
+
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RegularException(REQUEST_ERROR);
+        }
     }
 
     @Transactional

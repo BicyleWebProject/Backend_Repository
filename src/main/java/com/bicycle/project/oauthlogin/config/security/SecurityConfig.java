@@ -116,6 +116,7 @@ public class SecurityConfig  {
                 .antMatchers(HttpMethod.PUT, "/user/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/community/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/community/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/deal/**").permitAll()
                 .anyRequest().hasRole("USER");
         return http.build();
     }
