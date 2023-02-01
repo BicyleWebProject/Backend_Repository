@@ -2,9 +2,11 @@ package com.bicycle.project.oauthlogin.controller.auth.dto;
 
 import com.bicycle.project.oauthlogin.common.Role;
 import com.bicycle.project.oauthlogin.data.entity.User;
+import com.bicycle.project.oauthlogin.domain.BasicDto;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 @Data
@@ -12,7 +14,7 @@ import java.util.Collections;
 @AllArgsConstructor
 @ToString
 @Builder
-public class SignUpRequestDto {
+public class SignUpRequestDto extends BasicDto {
 
     private String userEmail;
 
@@ -38,5 +40,20 @@ public class SignUpRequestDto {
                 .username(username)
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build();
+    }
+
+    @Override
+    public String getStatus() {
+        return super.getStatus();
+    }
+
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return super.getCreatedAt();
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return super.getUpdatedAt();
     }
 }

@@ -12,6 +12,9 @@ public interface DealDao {
 
     public List<GetTopListRes> getTopList();
 
+    //그냥 거레 게시글 자체를 가져오면 됨. 10개
+    public List<GetFullRecentListRes> getFullRecentList(@Param("categoryId") Long categoryId);
+
     public List<RecentListDto> getRecentList(@Param("userEmail") String userEmail);
 
     void writeDeal(WritingDealReq writingDealReq);
