@@ -15,7 +15,48 @@
             count(receiver_id) as counts
         from message
         where receiver_id = #{userIdx}
+          and is_checked = 'N'
     </select>
+
+    <select id="getConnectedUser" resultType="Hashmap">
+        select
+            receiver_id as num
+        from message
+        where sender_id = #{userId}
+        union
+        select
+            sender_id as num
+        from message
+        where
+            receiver_id = #{userId}
+    </select>
+
+    <select id="getMessage" parameterType="com.bicycle.project.oauthlogin.domain.message.dto.GetMessageReq"
+        resultType="com.bicycle.project.oauthlogin.domain.message.dto.GetMessageRes">
+        select
+            sender_id as senderId,
+            receiver_id as receiverId,
+            created_at as createdAt,
+            is_checked as isChecked,
+            message_content as messageContent,
+            message_id as messageId
+        from
+            message
+        where
+            sender_id = #{senderId}
+          and receiver_id = #{receiverId}
+        order by created_at desc
+    </select>
+
+    <update id="updateIsChecked" parameterType="com.bicycle.project.oauthlogin.domain.message.dto.GetMessageReq">
+        update message
+        set
+            is_checked = 'Y'
+        where
+            sender_id = #{senderId}
+          and receiver_id = #{receiverId}
+    </update>
+
 
 
 
