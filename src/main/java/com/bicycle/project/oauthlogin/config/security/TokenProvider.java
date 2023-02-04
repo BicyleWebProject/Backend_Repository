@@ -82,7 +82,9 @@ public class TokenProvider {
                 .accessTokenExpireDate(accessTokenValidMillisecond)
                 .build();
     }
-
+ /*
+ 인증이 성공하면 SecurityContextHolder에 저장할 Authentication 객체를 생성한다.
+  */
     public Authentication getAuthentication(String accessToken) throws CustomAuthenticationEntryPoint {
 
         Claims claims = parseClaims(accessToken);
@@ -94,6 +96,8 @@ public class TokenProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
+
+
 
     private Claims parseClaims(String token){
         try{
