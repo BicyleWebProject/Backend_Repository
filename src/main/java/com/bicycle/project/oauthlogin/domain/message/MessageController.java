@@ -7,6 +7,8 @@ import com.bicycle.project.oauthlogin.config.RegularResponseStatus;
 import com.bicycle.project.oauthlogin.domain.message.dto.GetMessageReq;
 import com.bicycle.project.oauthlogin.domain.message.dto.GetMessageRes;
 import com.bicycle.project.oauthlogin.domain.message.dto.WriteMessageReq;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,10 @@ public class MessageController {
         }
     }
 
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="X-AUTH-TOKEN", value = "로그인 한 뒤 access token", required=true, dataType = "String", paramType = "header")
+    })
     @GetMapping("/getNotReads/{userId}")
     public RegularResponse<Long> getNotReads(@PathVariable @Valid Long userId){
         try {
