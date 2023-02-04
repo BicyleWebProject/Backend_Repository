@@ -35,6 +35,8 @@ public class GetFullRecentListRes extends BasicDto {
     private LocalDateTime updatedAt;
 
     private Long categoryId; //categoryID도 받아야 되네용
+
+    private Long dealLikes;
     @Override
     public String getStatus() {
         return super.getStatus();
