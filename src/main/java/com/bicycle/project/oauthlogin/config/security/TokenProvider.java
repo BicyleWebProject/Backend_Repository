@@ -75,6 +75,7 @@ public class TokenProvider {
                 .compact();
 
         return TokenDto.builder()
+                .userIdx(userIdx)
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
