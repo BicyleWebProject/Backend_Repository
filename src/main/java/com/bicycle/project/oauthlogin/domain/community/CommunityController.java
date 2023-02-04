@@ -54,10 +54,10 @@ public class CommunityController {
         }
     }
 
-    @GetMapping("/userRecentList/{userEmail}")
-    public RegularResponse<List<GetUserRecentList>> getUserRecentList(@PathVariable("userEmail") String userEmail){
+    @GetMapping("/userRecentList")
+    public RegularResponse<List<GetUserRecentList>> getUserRecentList(){
         try{
-            List<GetUserRecentList> getUserRecentList = communityService.getUserRecentList(userEmail);
+            List<GetUserRecentList> getUserRecentList = communityService.getUserRecentList();
             return new RegularResponse<>(getUserRecentList);
         }catch (Exception e){
             e.printStackTrace();

@@ -45,9 +45,9 @@ public class CommunityService {
         return getRecentList;
     }
 
-    public List<GetUserRecentList> getUserRecentList(String userEmail) throws RegularException {
+    public List<GetUserRecentList> getUserRecentList() throws RegularException {
         try{
-            List<GetUserRecentList> result = communityDao.getUserRecentList(userEmail);
+            List<GetUserRecentList> result = communityDao.getUserRecentList();
             logger.info("CommunityService test!");
 
             return result;

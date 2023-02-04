@@ -15,27 +15,30 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class GetUserRecentList extends BasicDto {
 
-    /*
-    제목, 하트수, 댓글수 가져오기
-     */
-    private String userEmail;
-
     private Long communityId;
 
     private LocalDateTime updatedAt;
 
-    private Long countLike; //좋아요 숫자
-
-    private Long commentLike; //댓글 숫자
+    private LocalDateTime createdAt;
 
     @Lob
     private String content;
 
     private String title;
 
+    private String categoryId;
+    /*
+    제목, 하트수, 댓글수 가져오기
+     */
+    private String userEmail;
+
     private String communityImageUrl;
 
-    private String categoryId;
+    private Long likeCount; //좋아요 숫자
+
+    private Long commentCount;
+
+
 
     @Override
     public String getStatus() {

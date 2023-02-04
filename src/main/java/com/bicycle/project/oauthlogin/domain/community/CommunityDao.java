@@ -14,7 +14,7 @@ public interface CommunityDao {
 
     public List<RecentListDto> getRecentList();
 
-    public List<GetUserRecentList> getUserRecentList(String userEmail);
+    public List<GetUserRecentList> getUserRecentList();
 
     public void writeCommunity(CommunityWritingReq communityWritingReq);
 
