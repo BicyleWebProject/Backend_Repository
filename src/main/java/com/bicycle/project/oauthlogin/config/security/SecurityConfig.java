@@ -121,8 +121,11 @@ public class SecurityConfig  {
 
                 .antMatchers(HttpMethod.DELETE,"/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**" ).permitAll()
                 .antMatchers(HttpMethod.PATCH,"/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**","/message/**").permitAll()
-
-                .anyRequest().hasRole("USER");
+                .antMatchers(HttpMethod.DELETE, "/user/user/**").permitAll()
+                .anyRequest().hasRole("USER")
+                .and()
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                //jwt 토큰 필터를 id/pwd 인증 필터 전에 넣기
         return http.build();
     }
 

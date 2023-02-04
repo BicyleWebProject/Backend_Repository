@@ -2,6 +2,7 @@ package com.bicycle.project.oauthlogin.domain.user;
 
 
 
+import com.bicycle.project.oauthlogin.common.CommonResult;
 import com.bicycle.project.oauthlogin.common.SingleResult;
 import com.bicycle.project.oauthlogin.config.RegularException;
 import com.bicycle.project.oauthlogin.config.RegularResponse;
@@ -9,10 +10,16 @@ import com.bicycle.project.oauthlogin.data.entity.User;
 import com.bicycle.project.oauthlogin.domain.user.dto.*;
 import com.bicycle.project.oauthlogin.repository.UserRepository;
 import com.bicycle.project.oauthlogin.service.ResponseService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -64,8 +71,11 @@ public class UserController {
     }
 
     /*
-    회원정보 수정 메서드
+    회원정보 수정 메서드, access Token이 갖고 있는 경우(user 인경우)만 수정가능!
      */
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="X-AUTH-TOKEN", value = "로그인 한 뒤 access token", required=true, dataType = "String", paramType = "header")
+    })
     @PutMapping("/updateUser/{userEmail}/{newUsername}")
     public RegularResponse<String> updateUser(@PathVariable @Valid String userEmail, @PathVariable String newUsername) throws RegularException {
 
@@ -96,4 +106,18 @@ public class UserController {
         }
     }
 
+
+    /*
+    회원탈퇴 메서드, 마찬가지로 X-AUTH-TOKEN이 있는 경우(access Token을 갖고 있는 경우)만 가능
+     */
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="X-AUTH-TOKEN", value = "로그인 한 뒤 access token", required=true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value="회원 삭제")
+    @DeleteMapping(value="/user/{userEmail}")
+    public CommonResult delete(
+            @ApiParam(value="회원가입한 id", required=true) @PathVariable String userEmail){
+        userRepository.deleteByUserEmail(userEmail);
+        return responseService.getSuccessResult();
+    }
 }
