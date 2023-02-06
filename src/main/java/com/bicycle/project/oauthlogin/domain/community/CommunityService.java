@@ -67,6 +67,16 @@ public class CommunityService {
         }
     }
 
+    public List<GetSearchByContent> getSearchByContent(String content) throws RegularException{
+        try{
+            List<GetSearchByContent> result = communityDao.getSearchByContent(content);
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RegularException(REQUEST_ERROR);
+        }
+    }
+
     @Transactional
     public void writeCommunity(CommunityWritingReq communityWritingReq) {
         communityWritingReq.setStatus("Y");
