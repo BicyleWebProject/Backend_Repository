@@ -25,6 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -42,13 +44,14 @@ public class SignController {
     @PostMapping("/sign-in")
     public SingleResult<TokenDto> signIn(
             @ApiParam(value="login-dto", required = true)
-            @RequestBody LoginDto signInRequestDto){
+            @RequestBody LoginDto signInRequestDto, HttpServletResponse response){
 
         LOGGER.info("로그인 과정입니다.");
         //한번 출력
         LOGGER.info(String.valueOf(signInRequestDto.getUserEmail()) + 1);
         TokenDto tokenDto = signService.signIn(signInRequestDto);
         LOGGER.info(String.valueOf(signInRequestDto.getUserEmail()) + 2);
+        response.addHeader("X-AUTH-TOKEN", tokenDto.getAccessToken());
         return responseService.getSingleResult(tokenDto);
     }
 
