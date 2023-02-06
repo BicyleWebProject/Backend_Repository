@@ -6,6 +6,7 @@ import com.bicycle.project.oauthlogin.common.CommonResult;
 import com.bicycle.project.oauthlogin.common.SingleResult;
 import com.bicycle.project.oauthlogin.config.RegularException;
 import com.bicycle.project.oauthlogin.config.RegularResponse;
+import com.bicycle.project.oauthlogin.config.security.TokenProvider;
 import com.bicycle.project.oauthlogin.data.entity.User;
 import com.bicycle.project.oauthlogin.domain.user.dto.*;
 import com.bicycle.project.oauthlogin.repository.UserRepository;
@@ -39,6 +40,8 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final ResponseService responseService;
+
+    private final TokenProvider tokenProvider;
 
     @Autowired
     private UserDao userDao;
@@ -80,6 +83,7 @@ public class UserController {
     public RegularResponse<String> updateUser(@PathVariable @Valid String userEmail, @PathVariable String newUsername) throws RegularException {
 
         logger.info("userRequestDto 전");
+
         UserRequestDto userRequestDto = UserRequestDto.builder()
                 .username(newUsername)
                 .build();

@@ -57,6 +57,16 @@ public class CommunityService {
         }
     }
 
+    public List<GetSearchByWriter> getSearchByWriter(String userEmail) throws RegularException{
+        try{
+            List<GetSearchByWriter> result = communityDao.getSearchByWriter(userEmail);
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RegularException(REQUEST_ERROR);
+        }
+    }
+
     @Transactional
     public void writeCommunity(CommunityWritingReq communityWritingReq) {
         communityWritingReq.setStatus("Y");

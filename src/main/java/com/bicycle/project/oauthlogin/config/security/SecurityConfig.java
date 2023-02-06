@@ -47,7 +47,7 @@ public class SecurityConfig  {
 //
 //                .csrf().disable() // REST API는 csrf 보안이 필요 없으므로 비활성화
 //
-//                .sessionManagement()
+//                .sessionManagement()ㅓ
 //                .sessionCreationPolicy(
 //                        SessionCreationPolicy.STATELESS) // JWT Token 인증방식으로 세션은 필요 없으므로 비활성화
 //
@@ -124,7 +124,8 @@ public class SecurityConfig  {
                 .antMatchers(HttpMethod.DELETE, "/user/user/**").permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .authorizeRequests();
                 //jwt 토큰 필터를 id/pwd 인증 필터 전에 넣기
         return http.build();
     }

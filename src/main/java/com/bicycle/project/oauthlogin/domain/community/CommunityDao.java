@@ -16,6 +16,10 @@ public interface CommunityDao {
 
     public List<GetUserRecentList> getUserRecentList();
 
+    public List<GetSearchByWriter> getSearchByWriter(String userEmail);
+
+
+
     public void writeCommunity(CommunityWritingReq communityWritingReq);
 
     CommunityDetailRes getCommunityDetail(Integer communityId);
