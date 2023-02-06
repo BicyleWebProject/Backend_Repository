@@ -47,6 +47,25 @@
             (c.community_id = cl.community_id )  group by c.community_id  order by c.updated_at desc limit 11;
     </select>
 
+    <select id="getSearchByWriter" resultType="com.bicycle.project.oauthlogin.domain.community.dto.GetSearchByWriter">
+        select c.community_id as communityId,
+               c.created_at as createdAt,
+               c.updated_at as updatedAt,
+               c.content as content,
+               c.title as title,
+               c.category_id as categoryId,
+               c.user_id as userEmail,
+               COUNT(cm.comment_id) as commentCount,
+               COUNT(cl.community_like_id) as likeCount
+        from community as c
+                 left outer join (select COUNT(*) as 'comments', community_id, comment_id from comment group by community_id) as cm on c.community_id = cm.community_id
+                 left outer join user u on c.user_id = u.user_id
+                 left outer join (select COUNT(*) as 'community_likes',community_like_id, community_id from community_like group by community_like_id ) as cl on
+            (c.community_id = cl.community_id )
+        where c.user_id = #{userEmail}
+        group by c.community_id  order by c.updated_at desc limit 11;
+    </select>
+
     <insert id="writeCommunity" parameterType="com.bicycle.project.oauthlogin.domain.community.dto.CommunityWritingReq">
         insert into
             community(title, content, user_id,community_image_url, status,created_at,updated_at)

@@ -85,18 +85,15 @@ public class TokenProvider {
  /*
  인증이 성공하면 SecurityContextHolder에 저장할 Authentication 객체를 생성한다.
   */
-    public Authentication getAuthentication(String accessToken) throws CustomAuthenticationEntryPoint {
+    public Authentication getAuthentication(String accessToken)  {
 
-        Claims claims = parseClaims(accessToken);
-
-        if(claims.get(ROLES) ==  null){
-            throw new CustomAuthenticationEntryPoint();
-        }
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(accessToken));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
+    public String getUserPk(String token){
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
 
 
     private Claims parseClaims(String token){
@@ -113,8 +110,10 @@ public class TokenProvider {
 
     public boolean validationToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            return true;
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+//            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+//            return true;
+            return !claims.getBody().getExpiration().before(new Date());
         } catch (SecurityException | MalformedJwtException e) {
             log.error("잘못된 Jwt 서명입니다.");
         } catch (ExpiredJwtException e) {
