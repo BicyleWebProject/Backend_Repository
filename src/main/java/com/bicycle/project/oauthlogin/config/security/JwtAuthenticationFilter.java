@@ -26,10 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = jwtProvider.resolveToken((HttpServletRequest) request);
-
         log.info("veryfing token!");
-        log.info(((HttpServletRequest) request).getRequestURL().toString());
-
         if(token != null && jwtProvider.validationToken(token)){
             Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
