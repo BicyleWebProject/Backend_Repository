@@ -6,10 +6,13 @@ import com.bicycle.project.oauthlogin.common.CommonResult;
 import com.bicycle.project.oauthlogin.common.SingleResult;
 import com.bicycle.project.oauthlogin.config.RegularException;
 import com.bicycle.project.oauthlogin.config.RegularResponse;
+import com.bicycle.project.oauthlogin.config.RegularResponseStatus;
+import com.bicycle.project.oauthlogin.config.security.TokenProvider;
 import com.bicycle.project.oauthlogin.data.entity.User;
 import com.bicycle.project.oauthlogin.domain.user.dto.*;
 import com.bicycle.project.oauthlogin.repository.UserRepository;
 import com.bicycle.project.oauthlogin.service.ResponseService;
+import com.bicycle.project.oauthlogin.utils.SecurityUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,10 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final ResponseService responseService;
+
+    private final TokenProvider tokenProvider;
+
+    private SecurityUtil securityUtil;
 
     @Autowired
     private UserDao userDao;
@@ -80,6 +88,7 @@ public class UserController {
     public RegularResponse<String> updateUser(@PathVariable @Valid String userEmail, @PathVariable String newUsername) throws RegularException {
 
         logger.info("userRequestDto 전");
+
         UserRequestDto userRequestDto = UserRequestDto.builder()
                 .username(newUsername)
                 .build();
@@ -116,7 +125,14 @@ public class UserController {
     @ApiOperation(value="회원 삭제")
     @DeleteMapping(value="/user/{userEmail}")
     public CommonResult delete(
-            @ApiParam(value="회원가입한 id", required=true) @PathVariable String userEmail){
+            @ApiParam(value="회원가입한 id", required=true) @PathVariable String userEmail, HttpServletRequest request) throws RegularException {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null || authentication.getName() == null ||
+                authentication.getName() != tokenProvider.getUserPk(tokenProvider.resolveToken(request)) ||
+                tokenProvider.validationToken(tokenProvider.resolveToken(request))){
+            throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
+        }
         userRepository.deleteByUserEmail(userEmail);
         return responseService.getSuccessResult();
     }

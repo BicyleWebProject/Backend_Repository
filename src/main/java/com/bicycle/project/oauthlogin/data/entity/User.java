@@ -30,30 +30,14 @@ public class User extends BaseEntity implements UserDetails {
 
     private static final long serialVersionUID = 6014984039564979072L;
 
-
     @Id
     @GeneratedValue(strategy =GenerationType.IDENTITY)
     private Long userIdx; //id 가 아닌 user 식별자.
 
-    @Override
-    public String getStatus() {
-        return super.getStatus();
-    }
-
-    @Override
-    public LocalDateTime getCreatedAt() {
-        return super.getCreatedAt();
-    }
-
-    @Override
-    public LocalDateTime getUpdatedAt() {
-        return super.getUpdatedAt();
-    }
-
     @Column(name = "USER_ID", length = 64, unique = true)
     @NotNull
     @Size(max = 64)
-//    @Email //Email 형식인지 자동으로 검사!
+//    @Email //Email 형식인지 자동으로 검사! -> 프론트 단에서 검사
 //    @NotBlank(message = "Email은 필수 입력사항입니다")
     private String userEmail;
 
@@ -62,16 +46,10 @@ public class User extends BaseEntity implements UserDetails {
     @Size(max = 100)
     private String username;
 
-//    @JsonIgnore
     @Column(name = "PASSWORD", length = 128)
     @NotNull
     @Size(max = 128)
     private String password;
-
-//    @Column(name = "EMAIL", length = 512, unique = true)
-//    @NotNull
-//    @Size(max = 512)
-//    private String email;
 
     @Column(name = "EMAIL_VERIFIED_YN", length = 1)
     //@NotNull
@@ -89,33 +67,18 @@ public class User extends BaseEntity implements UserDetails {
     @Size(max = 512)
     private String profileImageUrl;
 
-//    @Column(name = "CREATED_AT")
-//    @NotNull
-//    private LocalDateTime createdAt;
-//
-//    @Column(name = "MODIFIED_AT")
-//    @NotNull
-//    private LocalDateTime modifiedAt;
+    @Column(name="INTERESTED_AT", length = 512)
+    @Size(max=512)
+    private String interestedAt;
 
+    @Column(name="LOCATION", length = 512)
+    @Size(max=512)
+    private String location;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
-
-//    public User(Long userIdx, String userEmail, String username, String password, String emailVerifiedYn,
-//                List<String> roles, String profileImageUrl/*, LocalDateTime createdAt, LocalDateTime modifiedAt*/) {
-//        this.userIdx = userIdx;
-//        this.userEmail = userEmail;
-//        this.username = username;
-//        this.password = password;
-////        this.email = email;
-//        this.emailVerifiedYn = emailVerifiedYn;
-//        this.roles = roles;
-//        this.profileImageUrl = profileImageUrl != null ? profileImageUrl : " ";
-////        this.createdAt = createdAt;
-////        this.modifiedAt = modifiedAt;
-//    }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getUserEmail(){
@@ -155,4 +118,18 @@ public class User extends BaseEntity implements UserDetails {
         this.username = newUsername;
     }
 
+    @Override
+    public String getStatus() {
+        return super.getStatus();
+    }
+
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return super.getCreatedAt();
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return super.getUpdatedAt();
+    }
 }

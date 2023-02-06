@@ -16,50 +16,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JwtFilter extends GenericFilterBean {
+public class JwtFilter extends OncePerRequestFilter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
-    private TokenProvider tokenProvider;
-    public JwtFilter(TokenProvider jwtTokenProvider){
-        this.tokenProvider = jwtTokenProvider;
+    private final TokenProvider jwtProvider;
+
+    public JwtFilter(TokenProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
     }
 
-    //    @Override
-//    protected void doFilterInternal(HttpServletRequest servletRequest,
-//                                    HttpServletResponse servletResponse,
-//                                    FilterChain filterChain) throws ServletException, IOException{
-//        String token = jwtTokenProvider.resolveToken(servletRequest);
-//    }
-//    @Override
-//    protected void doFilterInternal(HttpServletRequest servletRequest,
-//                                    HttpServletResponse servletResponse,
-//                                    FilterChain filterChain) throws ServletException, IOException {
-//        String token = tokenProvider.resolveToken(servletRequest);
-//        LOGGER.info("[doFilterInternal] token 값 추출 완료. token : {}", token);
-//
-//        LOGGER.info("[doFilterInternal] token 값 유효성 체크 시작");
-//        if (token != null && tokenProvider.validateToken(token)) {
-//            Authentication authentication = tokenProvider.getAuthentication(token);
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//            LOGGER.info("[doFilterInternal] token 값 유효성 체크 완료");
-//        }
-//
-//        filterChain.doFilter(servletRequest, servletResponse);
-//    }
-
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException{
-        String token = tokenProvider.resolveToken((HttpServletRequest) request);
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        String token = jwtProvider.resolveToken((HttpServletRequest) request);
 
-        if(token != null && tokenProvider.validationToken(token)){
-            Authentication authentication = null;
-            try {
-                authentication = tokenProvider.getAuthentication(token);
-            } catch (CustomAuthenticationEntryPoint e) {
-                throw new RuntimeException(e);
-            }
+
+        if(token != null && jwtProvider.validationToken(token)){
+            Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        filterChain.doFilter(request, response);
+        chain.doFilter(request, response);
     }
 }

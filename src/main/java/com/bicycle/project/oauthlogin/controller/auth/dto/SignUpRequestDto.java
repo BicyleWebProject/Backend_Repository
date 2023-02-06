@@ -22,6 +22,10 @@ public class SignUpRequestDto extends BasicDto {
 
     private String username;
 
+    private String interestedAt;
+
+    private String location;
+
     private Role roles;
 
     public User toEntity(PasswordEncoder passwordEncoder){
@@ -29,9 +33,10 @@ public class SignUpRequestDto extends BasicDto {
                 .userEmail(userEmail)
                 .password(passwordEncoder.encode(password))
                 .username(username)
+                .interestedAt(interestedAt)
+                .location(location)
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build();
-
     }
 
     public User toEntity(){

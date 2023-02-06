@@ -117,6 +117,28 @@ public class CommunityController {
         }
     }
 
+    @GetMapping("/getSearchByWriter/{userEmail}")
+    public RegularResponse<List<GetSearchByWriter>> getSearchByWriter(@PathVariable String userEmail){
+        try{
+            List<GetSearchByWriter> result = communityService.getSearchByWriter(userEmail);
+            return new RegularResponse<>(result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new RegularResponse<>(new ArrayList<>());
+        }
+    }
+
+    @GetMapping("/getSearchByContent/{content}")
+    public RegularResponse<List<GetSearchByContent>> getSearchByContent(@PathVariable String content){
+        try{
+            List<GetSearchByContent> result = communityService.getSearchByContent(content);
+            return new RegularResponse<>(result);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new RegularResponse<>(new ArrayList<>());
+        }
+    }
+
     @PostMapping("/pushCommunityLike")
     public RegularResponse<String> pushCommunityLike(@RequestBody @Valid CommunityLikeReq communityLikeReq){
 

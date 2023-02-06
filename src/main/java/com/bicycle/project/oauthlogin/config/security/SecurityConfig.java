@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,10 +17,18 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -33,7 +42,6 @@ public class SecurityConfig  {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
 
-
     @Autowired
     public SecurityConfig(TokenProvider jwtTokenProvider, CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint){
         this.tokenProvider = jwtTokenProvider;
@@ -41,64 +49,8 @@ public class SecurityConfig  {
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
-//    @Override
-//    protected void configure(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity.httpBasic().disable() // REST API는 UI를 사용하지 않으므로 기본설정을 비활성화
-//
-//                .csrf().disable() // REST API는 csrf 보안이 필요 없으므로 비활성화
-//
-//                .sessionManagement()
-//                .sessionCreationPolicy(
-//                        SessionCreationPolicy.STATELESS) // JWT Token 인증방식으로 세션은 필요 없으므로 비활성화
-//
-//                .and()
-//                .authorizeRequests() // 리퀘스트에 대한 사용권한 체크
-//                .antMatchers("/sign-api/sign-in", "/sign-api/sign-up",
-//                        "/sign-api/exception").permitAll() // 가입 및 로그인 주소는 허용
-//                .antMatchers(HttpMethod.GET, "/product/**").permitAll() // product로 시작하는 Get 요청은 허용
-//
-//                .antMatchers("**exception**").permitAll()
-//
-//                .anyRequest().hasRole("ADMIN") // 나머지 요청은 인증된 ADMIN만 접근 가능
-//
-//                .and()
-//                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
-//                .and()
-//                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-//
-//                .and()
-//                .addFilterBefore(new JwtFilter(tokenProvider),
-//                        UsernamePasswordAuthenticationFilter.class); // JWT Token 필터를 id/password 인증 필터 이전에 추가
-//    }
-//
-//
-//    @Override
-//    public void configure(WebSecurity webSecurity) {
-//        webSecurity.ignoring().antMatchers("/v2/api-docs", "/swagger-resources/**",
-//                "/swagger-ui.html", "/webjars/**", "/swagger/**", "/sign-api/exception");
-//    }
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-//        http.csrf().disable();
-//        http.authorizeRequests()
-//                //.antMatchers("/sign-api/sign-in", "/sign-api/sign-up","/sign-api/exception") //이부분은 권한 설정. 나중에 바꿔줄 수 있음
-//                .anyRequest().permitAll();
-//
-//        return http.build();
-//
-//    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-//        http.cors().and().csrf().disable();
-//        http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers(HttpMethod.POST,"/sign-in", "/sign-up",
-//                        "/sign-api/sign-in", "/sign-api/sign-up").permitAll()
-//                .anyRequest().hasRole("USER");
-//        return http.build();
         http
                 .httpBasic().disable()
                 .csrf().disable()
@@ -124,7 +76,27 @@ public class SecurityConfig  {
                 .antMatchers(HttpMethod.DELETE, "/user/user/**").permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .accessDeniedHandler(new AccessDeniedHandler() {
+                    @Override
+                    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+                        //권한 문제 생겼을 시 호출
+                        response.setStatus(403);
+                        response.setCharacterEncoding("utf-8");
+                        response.setContentType("login/html; charset=UTF-8");
+                        response.getWriter().write("권한 없는 사용자입니다.");
+                    }
+                })
+                .authenticationEntryPoint(new AuthenticationEntryPoint() {
+                    @Override
+                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+                        //인증문제 생겼을 시 호출함
+                        response.setStatus(403);
+                        response.setContentType("login/html; charset=UTF-8");
+                        response.getWriter().write("인증되지 않은 사용자입니다.");
+                    }
+                });
                 //jwt 토큰 필터를 id/pwd 인증 필터 전에 넣기
         return http.build();
     }
