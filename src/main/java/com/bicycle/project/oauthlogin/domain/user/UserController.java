@@ -128,7 +128,8 @@ public class UserController {
             @ApiParam(value="회원가입한 id", required=true) @PathVariable String userEmail, HttpServletRequest request) throws RegularException {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(authentication == null || authentication.getName() == null || authentication.getName() != tokenProvider.getUserPk(tokenProvider.resolveToken(request)) ||
+        if(authentication == null || authentication.getName() == null ||
+                authentication.getName() != tokenProvider.getUserPk(tokenProvider.resolveToken(request)) ||
                 tokenProvider.validationToken(tokenProvider.resolveToken(request))){
             throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
         }
