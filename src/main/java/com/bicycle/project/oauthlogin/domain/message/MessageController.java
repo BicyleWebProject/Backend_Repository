@@ -37,10 +37,11 @@ public class MessageController {
     }
 
 
+
     @ApiImplicitParams({
             @ApiImplicitParam(name="X-AUTH-TOKEN", value = "로그인 한 뒤 access token", required=true, dataType = "String", paramType = "header")
     })
-    @ApiOperation(value="읽은 아이디 조회")
+
     @GetMapping("/getNotReads/{userId}")
     public RegularResponse<Long> getNotReads(@PathVariable @Valid Long userId){
         try {
