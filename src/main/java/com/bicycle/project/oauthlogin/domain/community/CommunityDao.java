@@ -18,7 +18,7 @@ public interface CommunityDao {
 
     public List<GetSearchByWriter> getSearchByWriter(String userEmail);
 
-
+    public List<GetSearchByContent> getSearchByContent(String content);
 
     public void writeCommunity(CommunityWritingReq communityWritingReq);
 
