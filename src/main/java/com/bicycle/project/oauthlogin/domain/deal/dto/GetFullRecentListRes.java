@@ -17,6 +17,8 @@ public class GetFullRecentListRes extends BasicDto {
     /*
     카테고리별 최근 게시글 조회!
      */
+
+    private Long dealId;
     @Lob
     private String content;
 
@@ -37,6 +39,7 @@ public class GetFullRecentListRes extends BasicDto {
     private Long categoryId; //categoryID도 받아야 되네용
 
     private Long dealLikes;
+
     @Override
     public String getStatus() {
         return super.getStatus();

@@ -46,10 +46,9 @@ public class DealService {
         }
     }
 
-    //왜 userId가 null로 뜰까요...?
-    public List<GetFullRecentListRes> getFullRecentList(Long categoryId) throws RegularException {
+    public List<GetFullRecentListRes> getFullRecentList(RecentListReq recentListReq) throws RegularException {
         try{
-            List<GetFullRecentListRes> result = dealDao.getFullRecentList(categoryId);
+            List<GetFullRecentListRes> result = dealDao.getFullRecentList(recentListReq);
             logger.info("FullRecentList 정보전달");
             return result;
         }catch (Exception e){
@@ -57,6 +56,13 @@ public class DealService {
             throw new RegularException(REQUEST_ERROR);
         }
     }
+
+    @Transactional
+    public Integer getSumBoard(RecentListReq recentListReq){
+        Integer result = dealDao.getSumBoard(recentListReq);
+        return result;
+    }
+
     @Transactional
     public String writeDeal (WritingDealReq writingDealReq, List<String>imageUrls)throws RegularException {
         try {

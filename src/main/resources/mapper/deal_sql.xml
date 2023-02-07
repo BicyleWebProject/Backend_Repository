@@ -27,8 +27,10 @@
 
     </select>
 
-    <select id="getFullRecentList" resultType="com.bicycle.project.oauthlogin.domain.deal.dto.GetFullRecentListRes">
-        select d.content as content,
+    <select id="getFullRecentList" parameterType="com.bicycle.project.oauthlogin.domain.deal.dto.RecentListReq"
+            resultType="com.bicycle.project.oauthlogin.domain.deal.dto.GetFullRecentListRes">
+        select d.deal_id as dealId,
+               d.content as content,
                d.user_id as userEmail,
                d.image_url1 as imageUrl1,
                d.image_url2 as imageUrl2,
@@ -44,10 +46,19 @@
             left outer join user u on d.user_id = u.user_id
         where d.category_id=#{categoryId}
         group by d.deal_id
-        order by d.updated_at desc limit 11 ;
+        order by d.updated_at desc limit 11 offset #{page};
     </select>
 
 
+    <select id="getSumBoard" parameterType="com.bicycle.project.oauthlogin.domain.deal.dto.RecentListReq"
+            resultType="Integer">
+        select COUNT(*)
+        from (SELECT title,
+                     updated_at as updatedAt
+              from deal
+              order by updated_at desc
+              ) as a
+    </select>
 
     <insert id="writeDeal" parameterType="com.bicycle.project.oauthlogin.domain.deal.dto.WritingDealReq">
         insert into deal( created_at, status, updated_at, content, price, title, category_id, user_id, image_url1, image_url2,image_url3)

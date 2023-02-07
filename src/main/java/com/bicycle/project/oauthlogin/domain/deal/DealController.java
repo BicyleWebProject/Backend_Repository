@@ -39,17 +39,18 @@ public class DealController {
 
     }
 
-    @GetMapping("/getFullRecentList/{categoryId}")
-    public RegularResponse<List<GetFullRecentListRes>> getFullRecentList(@PathVariable Long categoryId){
+    @GetMapping("/getFullRecentList")
+    public RegularResponse<List<GetFullRecentListRes>> getFullRecentList(@RequestBody @Valid RecentListReq recentListReq){
         try{
-
-            List<GetFullRecentListRes> result = dealService.getFullRecentList(categoryId);
+            List<GetFullRecentListRes> result = dealService.getFullRecentList(recentListReq);
+            Integer getSumDeal = dealService.getSumBoard(recentListReq);
             for(GetFullRecentListRes x : result){
                 logger.info("{}123", x);
             }
-            return new RegularResponse<>(result);
+            return new RegularResponse<>(result, getSumDeal);
         }catch (RegularException e){
-            return new RegularResponse<>(e.getStatus());
+            e.printStackTrace();
+            return new RegularResponse<>(new ArrayList<GetFullRecentListRes>());
         }
     }
 
