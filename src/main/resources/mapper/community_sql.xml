@@ -27,8 +27,8 @@
         order by updated_at desc limit 10
     </select>
 
-    <select id="getUserRecentList" resultType="com.bicycle.project.oauthlogin.domain.community.dto.GetUserRecentList">
-
+    <select id="getUserRecentList" parameterType="com.bicycle.project.oauthlogin.domain.community.dto.CommunityListReq"
+            resultType="com.bicycle.project.oauthlogin.domain.community.dto.GetUserRecentList">
 
         select c.community_id as communityId,
                c.updated_at as updatedAt,
@@ -44,7 +44,19 @@
                  left outer join (select COUNT(*) as 'comments', community_id, comment_id from comment group by community_id) as cm on c.community_id = cm.community_id
                  left outer join user u on c.user_id = u.user_id
                  left outer join (select COUNT(*) as 'community_likes',community_like_id, community_id from community_like group by community_like_id ) as cl on
-            (c.community_id = cl.community_id )  group by c.community_id  order by c.updated_at desc limit 11;
+            (c.community_id = cl.community_id )
+        group by c.community_id  order by c.updated_at desc limit 11 offset #{page};
+    </select>
+
+    <select id="getSumBoard" parameterType="com.bicycle.project.oauthlogin.domain.community.dto.CommunityListReq"
+            resultType="Integer">
+        select COUNT(*)
+        from (SELECT title,
+                     content,
+                     updated_at as updatedAt
+              from community
+              order by updated_at desc
+              ) as a
     </select>
 
     <select id="getSearchByWriter" resultType="com.bicycle.project.oauthlogin.domain.community.dto.GetSearchByWriter">

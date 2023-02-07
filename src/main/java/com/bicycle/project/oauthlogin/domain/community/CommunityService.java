@@ -45,9 +45,12 @@ public class CommunityService {
         return getRecentList;
     }
 
-    public List<GetUserRecentList> getUserRecentList() throws RegularException {
+    @Transactional
+    public List<GetUserRecentList> getUserRecentList(CommunityListReq communityListReq) throws RegularException {
         try{
-            List<GetUserRecentList> result = communityDao.getUserRecentList();
+            communityListReq.setPage((communityListReq.getPage()-1) * 11);
+            List<GetUserRecentList> result = communityDao.getUserRecentList(communityListReq);
+//            List<GetUserRecentList> result = communityDao.getUserRecentList();
             logger.info("CommunityService test!");
 
             return result;
@@ -55,6 +58,12 @@ public class CommunityService {
             e.printStackTrace();
             throw new RegularException(REQUEST_ERROR);
         }
+    }
+
+    @Transactional
+    public Integer getSumBoard(CommunityListReq communityListReq){
+        Integer result = communityDao.getSumBoard(communityListReq);
+        return result;
     }
 
     public List<GetSearchByWriter> getSearchByWriter(String userEmail) throws RegularException{

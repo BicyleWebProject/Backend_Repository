@@ -84,7 +84,7 @@ public class SecurityConfig  {
                         //권한 문제 생겼을 시 호출
                         response.setStatus(403);
                         response.setCharacterEncoding("utf-8");
-                        response.setContentType("login/html; charset=UTF-8");
+                        response.setContentType("login/html; charset=UTF-8"); //서비스 단에 맞게 변경하기
                         response.getWriter().write("권한 없는 사용자입니다.");
                     }
                 })

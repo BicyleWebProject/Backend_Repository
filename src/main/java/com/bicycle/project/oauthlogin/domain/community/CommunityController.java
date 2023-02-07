@@ -55,9 +55,10 @@ public class CommunityController {
     }
 
     @GetMapping("/userRecentList")
-    public RegularResponse<List<GetUserRecentList>> getUserRecentList(){
+    public RegularResponse<List<GetUserRecentList>> getUserRecentList(@RequestBody @Valid CommunityListReq communityListReq){
         try{
-            List<GetUserRecentList> getUserRecentList = communityService.getUserRecentList();
+            List<GetUserRecentList> getUserRecentList = communityService.getUserRecentList(communityListReq);
+            Integer getSumBoard = communityService.getSumBoard(communityListReq);
             return new RegularResponse<>(getUserRecentList);
         }catch (Exception e){
             e.printStackTrace();
