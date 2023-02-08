@@ -79,7 +79,7 @@
             d.price as price,
             u.profile_image_url as userImageUrl,
             u.user_idx as userId,
-            lf.total
+            u.location as location
         from
             deal d
                 inner join user u on d.user_id = u.user_idx
