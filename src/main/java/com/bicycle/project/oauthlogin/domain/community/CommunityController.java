@@ -54,7 +54,7 @@ public class CommunityController {
         }
     }
 
-    @GetMapping("/userRecentList")
+    @PostMapping("/userRecentList")
     public RegularResponse<List<GetUserRecentList>> getUserRecentList(@RequestBody @Valid CommunityListReq communityListReq){
         try{
             List<GetUserRecentList> getUserRecentList = communityService.getUserRecentList(communityListReq);
