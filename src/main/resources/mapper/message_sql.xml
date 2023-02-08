@@ -20,13 +20,17 @@
 
     <select id="getConnectedUser" resultType="Hashmap">
         select
-            receiver_id as userId
-        from message
+            receiver_id as userId,
+            u.username as username
+        from message m
+                 inner join user u on u.user_idx = m.receiver_id
         where sender_id = #{userId}
         union
         select
-            sender_id as num
-        from message
+            sender_id as num,
+            u.username as username
+        from message m2
+                 inner join user u on u.user_idx = m2.sender_id
         where
             receiver_id = #{userId}
     </select>

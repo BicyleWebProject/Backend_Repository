@@ -7,6 +7,7 @@ import com.bicycle.project.oauthlogin.config.RegularResponse;
 import com.bicycle.project.oauthlogin.config.RegularResponseStatus;
 import com.bicycle.project.oauthlogin.domain.community.CommunityService;
 import com.bicycle.project.oauthlogin.domain.deal.dto.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,12 +69,13 @@ public class DealController {
         }
     }
 
-    @ResponseBody
+
     @PostMapping("/writeDeal")
-    public RegularResponse<String> writeDeal(@RequestPart(value = "writingDealReq") @Valid WritingDealReq writingDealReq,
+    public RegularResponse<String> writeDeal(@RequestPart(value = "writingDealReq") String writingDealReqDto,
                                              @RequestPart(value = "images")List<MultipartFile> multipartFiles){
 
         try{
+            WritingDealReq writingDealReq =  new ObjectMapper().readValue(writingDealReqDto,WritingDealReq.class);
             List<String> imageUrls = new ArrayList<>();
             String result = null;
             if(!multipartFiles.get(0).getOriginalFilename().equals("")){
@@ -87,6 +89,9 @@ public class DealController {
             return new RegularResponse<>(result);
         }catch (RegularException regularException){
             return new RegularResponse<>(regularException.getStatus());
+        }catch (Exception e){
+            e.printStackTrace();
+            return new RegularResponse<>(new String("커뮤니티글 등록 실패"));
         }
     }
 

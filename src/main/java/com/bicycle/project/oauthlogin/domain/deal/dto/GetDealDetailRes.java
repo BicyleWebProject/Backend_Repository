@@ -23,4 +23,6 @@ public class GetDealDetailRes extends BasicDto {
     private Long userId;
     private Long total;
 
+    private String location;
+
 }
