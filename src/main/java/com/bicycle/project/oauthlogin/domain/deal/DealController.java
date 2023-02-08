@@ -39,7 +39,7 @@ public class DealController {
 
     }
 
-    @GetMapping("/getFullRecentList")
+    @PostMapping("/getFullRecentList")
     public RegularResponse<List<GetFullRecentListRes>> getFullRecentList(@RequestBody @Valid RecentListReq recentListReq){
         try{
             List<GetFullRecentListRes> result = dealService.getFullRecentList(recentListReq);
