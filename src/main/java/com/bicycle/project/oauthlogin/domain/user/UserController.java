@@ -80,6 +80,7 @@ public class UserController {
 
     /*
     회원정보 수정 메서드, access Token이 갖고 있는 경우(user 인경우)만 수정가능!
+    이부분에 JWT 검증해보기
      */
     @ApiImplicitParams({
             @ApiImplicitParam(name="X-AUTH-TOKEN", value = "로그인 한 뒤 access token", required=true, dataType = "String", paramType = "header")
@@ -118,22 +119,29 @@ public class UserController {
 
     /*
     회원탈퇴 메서드, 마찬가지로 X-AUTH-TOKEN이 있는 경우(access Token을 갖고 있는 경우)만 가능
+    그러면 토큰만 받아서 내부 로직에서 getName()을 꺼내 그냥 비교없이 사용
+    그러면 그 유저 자체를 쿼리에서 받아서 변환후 변경하는 방법 - 보안적으로 제일 깔끔
      */
     @ApiImplicitParams({
             @ApiImplicitParam(name="X-AUTH-TOKEN", value = "로그인 한 뒤 access token", required=true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value="회원 삭제")
-    @DeleteMapping(value="/user/{userEmail}")
-    public CommonResult delete(
-            @ApiParam(value="회원가입한 id", required=true) @PathVariable String userEmail, HttpServletRequest request) throws RegularException {
-        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    @DeleteMapping(value="/user/deleteUser")
+    public CommonResult delete(HttpServletRequest request) throws RegularException {
+//        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(authentication == null || authentication.getName() == null ||
-                authentication.getName() != tokenProvider.getUserPk(tokenProvider.resolveToken(request)) ||
-                tokenProvider.validationToken(tokenProvider.resolveToken(request))){
+        if(!chkToken(request)){
+            logger.info("123{}", tokenProvider.getUserPk(tokenProvider.resolveToken(request)));
             throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
         }
-        userRepository.deleteByUserEmail(userEmail);
+
+        logger.warn("warning!!!!!!!!!!!!!!!!");
+        userRepository.deleteByUserEmail(tokenProvider.getUserPk(tokenProvider.resolveToken(request)));
         return responseService.getSuccessResult();
+    }
+
+    private boolean chkToken(HttpServletRequest request){
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return tokenProvider.validationToken(tokenProvider.resolveToken(request));
     }
 }
