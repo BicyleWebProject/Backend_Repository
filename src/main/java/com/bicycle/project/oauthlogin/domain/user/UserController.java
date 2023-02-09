@@ -89,16 +89,17 @@ public class UserController {
     public RegularResponse<String> updateUser(HttpServletRequest request, @PathVariable String newUsername) throws RegularException {
 
         logger.info("userRequestDto 전");
-        logger.info("you{}", tokenProvider.getUserPk(tokenProvider.resolveToken(request)));
+        String userPk = tokenProvider.getUserPk(tokenProvider.resolveToken(request));
+        logger.info("you{}", userPk);
         if(!chkToken(request)){
-            logger.info("you{}", tokenProvider.getUserPk(tokenProvider.resolveToken(request))); //userIdx 반환
+            logger.info("you{}", userPk); //userIdx 반환
             throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
         }
         UserRequestDto userRequestDto = UserRequestDto.builder()
                 .username(newUsername)
                 .build();
 
-        userService.update(Long.valueOf(tokenProvider.getUserPk(tokenProvider.resolveToken(request))), userRequestDto, newUsername);
+        userService.update(Long.valueOf(userPk), userRequestDto, newUsername);
         logger.info("update 이후");
         return new RegularResponse<>(new String("유저 이름 변경이 완료되었습니다. {newUsername}"));
 

@@ -39,6 +39,7 @@
                d.title as title,
                d.updated_at as updatedAt,
                d.category_id as categoryId,
+               u.profile_image_url as userImg,
                COUNT(dls.deal_likes) as dealLikes
         from deal d left outer join
              (select COUNT(*) as 'deal_likes', deal_like_id

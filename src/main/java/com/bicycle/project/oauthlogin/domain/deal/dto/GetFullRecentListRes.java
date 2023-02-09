@@ -40,6 +40,8 @@ public class GetFullRecentListRes extends BasicDto {
 
     private Long dealLikes;
 
+    private String userImg;
+
     @Override
     public String getStatus() {
         return super.getStatus();

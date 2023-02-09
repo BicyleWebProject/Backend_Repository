@@ -38,6 +38,8 @@ public class GetUserRecentList extends BasicDto {
 
     private Long commentCount;
 
+    private String userImgUrl;
+
 
 
     @Override

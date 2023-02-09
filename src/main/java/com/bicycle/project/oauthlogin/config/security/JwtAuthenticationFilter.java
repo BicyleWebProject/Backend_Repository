@@ -14,6 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/*
+인증 or 권한이 필요한 요청 -> Header 확인해 토큰 유무 확인 -> header 유효하면 토큰에서 회원 꺼내서 조회 ->
+회원객체 + 회원권한으로 authentication 만들고 SecurityContextHolder에 들어가 Authentication을 SecurityContext에 넣어줌
+검증 서옥ㅇ -> Access, Refresh Token 발급
+ */
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
