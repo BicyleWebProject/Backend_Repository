@@ -67,9 +67,11 @@ public class UserService {
     }
 
     @Transactional
-    public void update(String userEmail, UserRequestDto userRequestDto, String newName){
-        User modifiedUser = userRepository.findByUserEmail(userEmail)
+    public void update(Long userIdx, UserRequestDto userRequestDto, String newName){
+        User modifiedUser = userRepository.findByUserIdx(userIdx)
                 .orElseThrow(CUserNotFoundException::new);
+//        User modifiedUser = userRepository.findByUserEmail(userEmail)
+//                .orElseThrow(CUserNotFoundException::new);
         modifiedUser.updateUsername(newName);
     }
 

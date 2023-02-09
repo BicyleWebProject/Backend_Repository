@@ -85,18 +85,20 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="X-AUTH-TOKEN", value = "로그인 한 뒤 access token", required=true, dataType = "String", paramType = "header")
     })
-    @PutMapping("/updateUser/{userEmail}/{newUsername}")
-    public RegularResponse<String> updateUser(@PathVariable @Valid String userEmail, @PathVariable String newUsername) throws RegularException {
+    @PutMapping("/updateUser/{newUsername}")
+    public RegularResponse<String> updateUser(HttpServletRequest request, @PathVariable String newUsername) throws RegularException {
 
         logger.info("userRequestDto 전");
-
+        logger.info("you{}", tokenProvider.getUserPk(tokenProvider.resolveToken(request)));
+        if(!chkToken(request)){
+            logger.info("you{}", tokenProvider.getUserPk(tokenProvider.resolveToken(request))); //userIdx 반환
+            throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
+        }
         UserRequestDto userRequestDto = UserRequestDto.builder()
                 .username(newUsername)
                 .build();
-        logger.info("userRequestDto 후, useService 전");
-        logger.info("userEmail : {}", userEmail);
-        logger.info("newUsername : {}", newUsername);
-        userService.update(userEmail, userRequestDto, newUsername);
+
+        userService.update(Long.valueOf(tokenProvider.getUserPk(tokenProvider.resolveToken(request))), userRequestDto, newUsername);
         logger.info("update 이후");
         return new RegularResponse<>(new String("유저 이름 변경이 완료되었습니다. {newUsername}"));
 
