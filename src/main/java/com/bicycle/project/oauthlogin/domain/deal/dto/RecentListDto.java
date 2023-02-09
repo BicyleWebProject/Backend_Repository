@@ -24,6 +24,7 @@ public class RecentListDto extends BasicDto {
     private String imageUrl3;
     private Integer price;
 
+
     @Override
     public String getStatus() {
         return super.getStatus();

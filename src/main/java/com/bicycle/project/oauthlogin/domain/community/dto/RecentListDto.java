@@ -16,4 +16,5 @@ public class RecentListDto {
     private String title;
     private String content;
     private String communityImageUrl;
+    private Integer communityId;
 }
