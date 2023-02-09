@@ -154,6 +154,7 @@ public class CommunityController {
 
     @PatchMapping("/updateCommunity")
     public RegularResponse<String> updateCommunity(@RequestBody @Valid UpdateCommunityReq updateCommunityReq){
+        if (!chkToken("asd")) return null;
         try {
             String result = communityService.updateCommunity(updateCommunityReq);
             return new RegularResponse<>(result);
@@ -161,6 +162,11 @@ public class CommunityController {
             regularException.printStackTrace();
             return new RegularResponse<>(regularException.getStatus());
         }
+    }
+
+    private boolean chkToken(String token) {
+        // 토큰 가지고 막 메차쿠차 뭐 하는거
+        return true;
     }
 
     @DeleteMapping("/deleteCommunity/{communityId}")
