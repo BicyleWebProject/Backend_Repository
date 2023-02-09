@@ -39,7 +39,8 @@
                c.user_id as uerEmail,
                c.community_image_url as communityImageUrl,
                COUNT(cm.comment_id) as commentCount,
-               COUNT(cl.community_like_id) as likeCount
+               COUNT(cl.community_like_id) as likeCount,
+               u.profile_image_url as userImgUrl
         from community as c
                  left outer join (select COUNT(*) as 'comments', community_id, comment_id from comment group by community_id) as cm on c.community_id = cm.community_id
                  left outer join user u on c.user_id = u.user_id

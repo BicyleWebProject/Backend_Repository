@@ -92,6 +92,7 @@ public class TokenProvider {
     }
 
     public String getUserPk(String token){
+        //말그래도 userPK, userIdx값을 가져온다.
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
