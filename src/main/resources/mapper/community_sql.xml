@@ -22,6 +22,7 @@
             c.category_Id as categoryId,
             c.user_id as userEmail,
             c.content as content,
+            c.community_id as communityId,
             c.community_image_url as communityImageUrl
         from community c
         order by updated_at desc limit 10

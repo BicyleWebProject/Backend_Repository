@@ -17,8 +17,14 @@
     </select>
 
     <select id="getRecentList" resultType="com.bicycle.project.oauthlogin.domain.deal.dto.RecentListDto">
-        select u.user_id,d.title, d.deal_id,d.category_id,
-               d.image_url1, d.image_url2, d.image_url3, d.price
+        select u.user_id as userEmail,
+               d.title as title,
+               d.deal_id as dealId,
+               d.category_id as categoryId,
+               d.image_url1 as imageUrl1,
+               d.image_url2 as imageUrl2,
+               d.image_url3 as imageUrl3,
+               d.price
         from deal d left outer join user u
                                     on d.user_id = u.user_id
         where u.user_id=#{userEmail}
