@@ -118,6 +118,12 @@ public class User extends BaseEntity implements UserDetails {
         this.username = newUsername;
     }
 
+    public void updateUserImgUrl(String url){this.profileImageUrl = url;}
+
+    public void updateInterestedAt(String interest){this.interestedAt = interest;}
+
+    public void updateLocation(String location){this.location = location;}
+
     @Override
     public String getStatus() {
         return super.getStatus();
