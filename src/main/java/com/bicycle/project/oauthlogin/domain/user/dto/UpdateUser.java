@@ -2,34 +2,34 @@ package com.bicycle.project.oauthlogin.domain.user.dto;
 
 import com.bicycle.project.oauthlogin.data.entity.User;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
-@Builder
+import javax.persistence.Lob;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequestDto {
+public class UpdateUser {
 
-    private String userEmail;
-    private String username;
+    private String userId;
+
+    private String newUsername;
 
     private String location;
 
     private String interestedAt;
 
+    @Lob
     private String userImgUrl;
 
     public User toEntity(){
         return User.builder()
-                .userEmail(userEmail)
-                .username(username)
+                .userEmail(userId)
+                .username(newUsername)
                 .location(location)
                 .interestedAt(interestedAt)
-//                .profileImageUrl(userImgUrl)
+                .profileImageUrl(userImgUrl)
                 .build();
     }
-
-
 }

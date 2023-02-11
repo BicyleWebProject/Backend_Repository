@@ -4,22 +4,31 @@ package com.bicycle.project.oauthlogin.domain.community;
 
 import com.bicycle.project.oauthlogin.config.RegularException;
 import com.bicycle.project.oauthlogin.config.RegularResponse;
+import com.bicycle.project.oauthlogin.config.security.TokenProvider;
 import com.bicycle.project.oauthlogin.domain.community.dto.*;
+import com.bicycle.project.oauthlogin.exception.TokenValidFailedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/community")
+@RequiredArgsConstructor
 public class CommunityController {
 
     @Autowired
     private CommunityService communityService;
+
+    private final TokenProvider tokenProvider;
 
     @GetMapping("/ctest")
     public String ctest(){
@@ -153,8 +162,8 @@ public class CommunityController {
     }
 
     @PatchMapping("/updateCommunity")
-    public RegularResponse<String> updateCommunity(@RequestBody @Valid UpdateCommunityReq updateCommunityReq){
-        if (!chkToken("asd")) return null;
+    public RegularResponse<String> updateCommunity(@RequestBody @Valid UpdateCommunityReq updateCommunityReq, HttpServletRequest request){
+        if (!chkToken(request)) throw new TokenValidFailedException();
         try {
             String result = communityService.updateCommunity(updateCommunityReq);
             return new RegularResponse<>(result);
@@ -164,9 +173,9 @@ public class CommunityController {
         }
     }
 
-    private boolean chkToken(String token) {
-        // 토큰 가지고 막 메차쿠차 뭐 하는거
-        return true;
+    private boolean chkToken(HttpServletRequest request){
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return tokenProvider.validationToken(tokenProvider.resolveToken(request));
     }
 
     @DeleteMapping("/deleteCommunity/{communityId}")

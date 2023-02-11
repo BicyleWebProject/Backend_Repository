@@ -13,6 +13,7 @@ import com.bicycle.project.oauthlogin.domain.user.dto.*;
 import com.bicycle.project.oauthlogin.repository.UserRepository;
 import com.bicycle.project.oauthlogin.service.ResponseService;
 import com.bicycle.project.oauthlogin.utils.SecurityUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -82,28 +84,43 @@ public class UserController {
     회원정보 수정 메서드, access Token이 갖고 있는 경우(user 인경우)만 수정가능!
     이부분에 JWT 검증해보기
      */
-    @ApiImplicitParams({
-            @ApiImplicitParam(name="X-AUTH-TOKEN", value = "로그인 한 뒤 access token", required=true, dataType = "String", paramType = "header")
-    })
-    @PutMapping("/updateUser/{newUsername}")
-    public RegularResponse<String> updateUser(HttpServletRequest request, @PathVariable String newUsername) throws RegularException {
 
-        logger.info("userRequestDto 전");
+    @PostMapping("/updateUser") //@PutMapping
+    public RegularResponse<String> updateUser(@RequestPart(value="multipartFile")MultipartFile multipartFile,
+                                              @RequestPart(value="UpdateUser") String UpdateUserDto,
+                                              HttpServletRequest request) throws RegularException {
+
         String userPk = tokenProvider.getUserPk(tokenProvider.resolveToken(request));
-        logger.info("you{}", userPk);
         if(!chkToken(request)){
             logger.info("you{}", userPk); //userIdx 반환
             throw new RegularException(RegularResponseStatus.REQUEST_ERROR);
         }
-        UserRequestDto userRequestDto = UserRequestDto.builder()
-                .username(newUsername)
-                .build();
+        try{
+            UpdateUser updateUser = new ObjectMapper().readValue(UpdateUserDto, UpdateUser.class);
+            String userImgUrl = null;
+            if(!multipartFile.getOriginalFilename().equals("")){
+                userImgUrl = userService.uploadS3image(multipartFile, Long.valueOf(tokenProvider.getUserPk(tokenProvider.resolveToken(request))));
+                updateUser.setUserImgUrl(userImgUrl);
+            }else{
+                updateUser.setUserImgUrl(null);
+            }
+            UserRequestDto userRequestDto = UserRequestDto.builder()
+                    .username(updateUser.getNewUsername())
+                    .userImgUrl(updateUser.getUserImgUrl())
+                    .location(updateUser.getLocation())
+                    .interestedAt(updateUser.getInterestedAt())
+                    .build();
 
-        userService.update(Long.valueOf(userPk), userRequestDto, newUsername);
-        logger.info("update 이후");
-        return new RegularResponse<>(new String("유저 이름 변경이 완료되었습니다. {newUsername}"));
+            userService.update(Long.valueOf(userPk), updateUser);
+            return new RegularResponse<>(new String("유저정보 변경이 완료되었습니다."));
 
+        }catch (Exception e){
+            e.printStackTrace();
+            return new RegularResponse<>(new String("유저정보 변경에 실패하였습니다."));
+        }
     }
+
+
 
     /*
         31.상대정보조회, 학준

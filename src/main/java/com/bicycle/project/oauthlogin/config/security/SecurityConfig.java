@@ -70,7 +70,7 @@ public class SecurityConfig  {
                 .antMatchers(HttpMethod.GET, "/community/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/community/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/deal/**").permitAll()
-
+                .antMatchers(HttpMethod.POST, "/user/**").permitAll()
                 .antMatchers(HttpMethod.DELETE,"/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**" ).permitAll()
                 .antMatchers(HttpMethod.PATCH,"/community/**", "/notice/**","/deal/**","/user**","/login/**","/comment/**","/message/**").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/user/user/**").permitAll()

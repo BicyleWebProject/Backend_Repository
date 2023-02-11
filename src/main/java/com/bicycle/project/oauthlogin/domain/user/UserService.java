@@ -4,6 +4,7 @@ package com.bicycle.project.oauthlogin.domain.user;
 import com.bicycle.project.oauthlogin.config.RegularException;
 import com.bicycle.project.oauthlogin.config.RegularResponseStatus;
 import com.bicycle.project.oauthlogin.data.entity.User;
+import com.bicycle.project.oauthlogin.domain.s3.S3Uploader;
 import com.bicycle.project.oauthlogin.domain.user.dto.*;
 import com.bicycle.project.oauthlogin.exception.CUserNotFoundException;
 import com.bicycle.project.oauthlogin.repository.UserRepository;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,8 @@ public class UserService {
     private UserDao userDao;
 
     private UserRepository userRepository;
+
+    private final S3Uploader s3Uploader;
 
     @Transactional
     public Long save(UserRequestDto userDto){
@@ -67,12 +71,28 @@ public class UserService {
     }
 
     @Transactional
-    public void update(Long userIdx, UserRequestDto userRequestDto, String newName){
+    public void update(Long userIdx, UpdateUser updateUser){
         User modifiedUser = userRepository.findByUserIdx(userIdx)
                 .orElseThrow(CUserNotFoundException::new);
-//        User modifiedUser = userRepository.findByUserEmail(userEmail)
-//                .orElseThrow(CUserNotFoundException::new);
-        modifiedUser.updateUsername(newName);
+        modifiedUser.updateUsername(updateUser.getNewUsername());
+        modifiedUser.updateLocation(updateUser.getLocation());
+        modifiedUser.updateInterestedAt(updateUser.getInterestedAt());
+        modifiedUser.updateUserImgUrl(updateUser.getUserImgUrl());
+    }
+
+    @Transactional
+    public String uploadS3image(MultipartFile multipartFile, Long userId) throws RegularException {
+        try {
+
+            String imagePath1 = s3Uploader.upload1(multipartFile, "userIdx" + String.valueOf(userId));
+            return imagePath1;
+        }catch(NullPointerException nullPointerException){
+            nullPointerException.printStackTrace();
+            return new String();
+        }catch(Exception exception) {
+            exception.printStackTrace();
+            throw new RegularException(REQUEST_ERROR);
+        }
     }
 
     @Transactional
