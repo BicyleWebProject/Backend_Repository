@@ -12,4 +12,6 @@ public class NoticeList {
     private String title;
     private String content;
     private String updatedAt;
+
+    private Long noticeBoardId;
 }
