@@ -1,10 +1,12 @@
 package com.bicycle.project.oauthlogin.config.security;
 
+import com.bicycle.project.oauthlogin.config.RegularException;
+import com.bicycle.project.oauthlogin.config.RegularResponseStatus;
 import com.bicycle.project.oauthlogin.controller.auth.dto.TokenDto;
+import com.bicycle.project.oauthlogin.data.entity.User;
+import com.bicycle.project.oauthlogin.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.Base64UrlCodec;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,16 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -31,19 +32,14 @@ public class TokenProvider {
     private final Logger LOGGER = LoggerFactory.getLogger(TokenProvider.class);
     private final UserDetailsService userDetailsService;
 
-    //private final Key key;
-//    private final long tokenValidMillisecond = 1000L * 60 * 60;
+    private final UserRepository userRepository;
+
     private final Long accessTokenValidMillisecond = 60 * 60 * 1000L; // 1 hour
     private final Long refreshTokenValidMillisecond = 14 * 24 * 60 * 60 * 1000L; // 14 day
     private String ROLES = "roles";
 
     @Value("${springboot.jwt.secret}")
     private String secretKey = "secretKey";
-
-//    public TokenProvider(@Value("${springboot.jwt.secret}") String secretKey){
-//        byte[] KeyBytes = Decoders.BASE64URL.decode(secretKey);
-//        this.key = Keys.hmacShaKeyFor(KeyBytes);
-//    }
 
     @PostConstruct
     protected void init(){
@@ -56,7 +52,6 @@ public class TokenProvider {
         Claims claims = Jwts.claims().setSubject(String.valueOf(userIdx));
         claims.put(ROLES, roles);
 
-//        long now = (new Date()).getTime();
         Date now = new Date();
 
 
@@ -126,76 +121,23 @@ public class TokenProvider {
         }
         return false;
     }
+    /*
+    Access Token뿐만 아닌, RefreshToken 검증하기 위한 코드들
+     */
+    @Transactional
+    public User getUserByRefreshToken(String token) throws RegularException {
+        return userRepository.findByUserIdx(token)
+                .orElseThrow(() -> new RegularException(RegularResponseStatus.REQUEST_ERROR));
+    }
 
-//
-//
-//
-//
-//    @PostConstruct
-//    protected void init() {
-//        LOGGER.info("[init] JwtTokenProvider 내 secretKey 초기화 시작");
-//        System.out.println(secretKey);
-//        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
-//        System.out.println(secretKey);
-//        LOGGER.info("[init] JwtTokenProvider 내 secretKey 초기화 완료");
-//        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+//    @Transactional
+//    public void setRefreshToken(String userEmail, String refreshToken){
+//        userRepository.findByUserEmail(userEmail).ifPresent(User -> User.setRefreshToken(refreshToken));
 //    }
 //
-//
-//    public String createToken(String userEmail, List<String> roles) {
-//        LOGGER.info("[createToken] 토큰 생성 시작");
-//        Claims claims = Jwts.claims().setSubject(userEmail);
-//        claims.put("roles", roles);
-//
-//        Date now = new Date();
-//        String token = Jwts.builder()
-//                .setClaims(claims)
-//                .setIssuedAt(now)
-//                .setExpiration(new Date(now.getTime() + tokenValidMillisecond))
-//                .signWith(SignatureAlgorithm.HS256, secretKey) // 암호화 알고리즘, secret 값 세팅
-//                .compact();
-//
-//        LOGGER.info("[createToken] 토큰 생성 완료");
-//        return token;
-//    }
-//
-//
-//    public Authentication getAuthentication(String token) {
-//        LOGGER.info("[getAuthentication] 토큰 인증 정보 조회 시작");
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUsername(token));
-//        LOGGER.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails UserName : {}",
-//                userDetails.getUsername());
-//        return new UsernamePasswordAuthenticationToken(userDetails, "",
-//                userDetails.getAuthorities());
-//    }
-//
-//
-//
-//
-//    public String getUsername(String token) {
-//        LOGGER.info("[getUsername] 토큰 기반 회원 구별 정보 추출");
-//        String info = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody()
-//                .getSubject();
-//        LOGGER.info("[getUsername] 토큰 기반 회원 구별 정보 추출 완료, info : {}", info);
-//        return info;
-//    }
-//
-//
-//    public String resolveToken(HttpServletRequest request) {
-//        LOGGER.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
-//        return request.getHeader("X-AUTH-TOKEN");
-//    }
-//
-//
-//    public boolean validateToken(String token) {
-//        LOGGER.info("[validateToken] 토큰 유효 체크 시작");
-//        try {
-//            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-//            LOGGER.info("[validateToken] 토큰 유효 체크 완료");
-//            return !claims.getBody().getExpiration().before(new Date());
-//        } catch (Exception e) {
-//            LOGGER.info("[validateToken] 토큰 유효 체크 예외 발생");
-//            return false;
-//        }
+//    @Transactional
+//    public void removeRefreshToken(String token){
+//        userRepository.findByRefreshToken(token)
+//                .ifPresent()
 //    }
 }

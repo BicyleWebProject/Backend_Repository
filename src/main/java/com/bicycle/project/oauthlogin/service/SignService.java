@@ -15,10 +15,14 @@ import com.bicycle.project.oauthlogin.repository.UserRepository;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Service
@@ -33,6 +37,8 @@ public class SignService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenJpaRepo tokenJpaRepo;
+
+    Logger logger = LoggerFactory.getLogger(SignService.class);
 
     @Transactional
     public TokenDto signIn(LoginDto signInRequestDto){
@@ -64,26 +70,36 @@ public class SignService {
 
     //만료된 토큰 재발급
     @Transactional
-    public TokenDto reissue(TokenRequestDto tokenRequestDto) throws CustomAuthenticationEntryPoint {
+    public TokenDto reissue(TokenRequestDto tokenRequestDto, HttpServletRequest request) throws CustomAuthenticationEntryPoint {
+        //refresh token 만료시 에러
         if(!tokenProvider.validationToken(tokenRequestDto.getRefreshToken())){
             throw new CRefreshTokenException();
         }
 
         String accessToken = tokenRequestDto.getAccessToken();
+        logger.info("res1");
         Authentication authentication = tokenProvider.getAuthentication(accessToken);
-
-        User user = userRepository.findByUserIdx(Long.parseLong(authentication.getName()))
+        logger.info("res2");
+        //userIdx -> PK값을 뽑아 와야 되는데, JPA를 사용하면 username을 가져옴 -> 변환해야됨
+        //findUserIdxByUsername() 메서드 사용..?
+//        User user = userRepository.findByUserIdx(userRepository.findUserIdxByUsername(authentication.getName()))
+//                .orElseThrow(CUserNotFoundException::new);
+        User user = userRepository.findByUserIdx(Long.valueOf(tokenProvider.getUserPk(tokenProvider.resolveToken(request))))
                 .orElseThrow(CUserNotFoundException::new);
-        UserRefreshToken refreshToken = tokenJpaRepo.findByUserKey(user.getUserIdx())
+        logger.info("res3");
+        UserRefreshToken refreshToken = tokenJpaRepo.findTop1ByUserKeyOrderByUpdatedAtDesc(user.getUserIdx())
                 .orElseThrow(CRefreshTokenException::new);
-
+        logger.info("res4");
         if(!refreshToken.getToken().equals(tokenRequestDto.getRefreshToken()))
             throw new CRefreshTokenException();
-
-        TokenDto newCreatedToken = tokenProvider.createTokenDto(user.getUserIdx(), user.getRoles());
-        UserRefreshToken updateRefreshToken = refreshToken.updateToken(newCreatedToken.getRefreshToken());
+        logger.info("res5");
+        TokenDto newToken = tokenProvider.createTokenDto(user.getUserIdx(), user.getRoles());
+        logger.info("res6");
+        UserRefreshToken updateRefreshToken = refreshToken.updateToken(newToken.getRefreshToken());
+        logger.info("res7");
         tokenJpaRepo.save(updateRefreshToken);
+        logger.info("res8");
 
-        return newCreatedToken;
+        return newToken;
     }
 }

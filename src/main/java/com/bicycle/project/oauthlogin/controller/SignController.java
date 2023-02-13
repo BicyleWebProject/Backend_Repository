@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
@@ -66,66 +67,9 @@ public class SignController {
 
     @PostMapping("/reissue")
     public SingleResult<TokenDto> reissue(
-            @ApiParam(value="token-재발급 dto", required = true)
-            @RequestBody TokenRequestDto tokenRequestDto) throws CustomAuthenticationEntryPoint {
+            @RequestBody TokenRequestDto tokenRequestDto, HttpServletRequest request) throws CustomAuthenticationEntryPoint {
         LOGGER.info("token 재발급 과정입니다");
-        return responseService.getSingleResult(signService.reissue(tokenRequestDto));
+        return responseService.getSingleResult(signService.reissue(tokenRequestDto, request));
     }
 
-
-
-//    private final SignServiceImpl userService;
-
-//    @Autowired
-//    public SignController(SignServiceImpl userService){
-//        this.userService = userService;
-//    }
-
-//    @PostMapping(value = "/sign-in")
-//    public SignInResultDto signIn(
-//            @ApiParam(value = "ID", required = true) @RequestParam String userEmail,
-//            @ApiParam(value = "Password" , required = true) @RequestParam String password)
-//            throws RuntimeException{
-//        LOGGER.info("[SignIn] 로그인 시도중입니다. id : {}, pw : ****", userEmail);
-//        SignInResultDto signInResultDto = userService.signIn(userEmail, password);
-//
-//        if(signInResultDto.getCode() == 0){
-//            LOGGER.info("[signIn] 정상적으로 로그인 되었습니다. id : {}, token : {} ", userEmail, signInResultDto.getToken());
-//        }
-//        return signInResultDto;
-//    }
-//
-//    @PostMapping(value = "/sign-up")
-//    public SignUpResultDto signUp(
-//            @ApiParam(value = "userEmail", required = true) @RequestParam String userEmail,
-//            @ApiParam(value = "password", required = true) @RequestParam String password,
-//            @ApiParam(value = "name", required = true) @RequestParam String name,
-//            @ApiParam(value = "role", required = true) @RequestParam String role) {
-//        LOGGER.info("[SignUp] 회원가입을 수행합니다. id : {} , password : ****, name : {}, role : {} ", userEmail, name, role);
-//        SignUpResultDto signUpResultDto = userService.signUp(userEmail, password, name, role);
-//
-//        LOGGER.info("[signUp] 회원가입이 완료되었습니다. id : {}", userEmail);
-//        return signUpResultDto;
-//    }
-//
-//    @GetMapping(value = "/exception")
-//    public void exceptionTest() throws RuntimeException{
-//        throw new RuntimeException("접근이 금지되었습니다.");
-//    }
-//
-//    @ExceptionHandler(value = RuntimeException.class)
-//    public ResponseEntity<Map<String, String>> ExceptionHandler(RuntimeException e){
-//        HttpHeaders responseHeaders = new HttpHeaders();
-//        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-//
-//        LOGGER.error("ExceptionHandler 호출", e.getCause(), e.getMessage());
-//
-//        Map<String, String> map = new HashMap<>();
-//        map.put("error type", httpStatus.getReasonPhrase());
-//        map.put("code", "400");
-//        map.put("message", "에러 발생함");
-//
-//        return new ResponseEntity<>(map, responseHeaders, httpStatus);
-//
-//    }
 }
