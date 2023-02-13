@@ -17,4 +17,5 @@ public class NoticeListReq {
 
     @NotNull
     private int page;
+
 }

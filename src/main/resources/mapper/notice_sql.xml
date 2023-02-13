@@ -7,7 +7,8 @@
     <select id="getBoard" parameterType="com.bicycle.project.oauthlogin.domain.notice.dto.NoticeListReq"
             resultType="com.bicycle.project.oauthlogin.domain.notice.dto.NoticeList">
         SELECT title,content,
-               updated_at as updatedAt
+               updated_at as updatedAt,
+               notice_board_id as noticeBoardId
         FROM
             notice_board
         where title like CONCAT('%', #{contains}, '%')
