@@ -82,9 +82,7 @@ public class UserController {
 
     /*
     회원정보 수정 메서드, access Token이 갖고 있는 경우(user 인경우)만 수정가능!
-    이부분에 JWT 검증해보기
      */
-
     @PostMapping("/updateUser") //@PutMapping
     public RegularResponse<String> updateUser(@RequestPart(value="multipartFile")MultipartFile multipartFile,
                                               @RequestPart(value="UpdateUser") String UpdateUserDto,

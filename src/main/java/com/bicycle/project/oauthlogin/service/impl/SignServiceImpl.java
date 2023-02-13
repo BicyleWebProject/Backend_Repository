@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Ref;
 import java.util.Collections;
 
@@ -76,7 +77,7 @@ public class SignServiceImpl /*implements SignService*/ {
 //    }
 
     @Transactional
-    public TokenDto reissue(TokenRequestDto tokenRequestDto) throws CustomAuthenticationEntryPoint {
+    public TokenDto reissue(TokenRequestDto tokenRequestDto, HttpServletRequest request) throws CustomAuthenticationEntryPoint {
         // 만료된 refresh token 에러
         if (!tokenProvider.validationToken(tokenRequestDto.getRefreshToken())) {
             throw new CRefreshTokenException();
@@ -87,9 +88,9 @@ public class SignServiceImpl /*implements SignService*/ {
         Authentication authentication = tokenProvider.getAuthentication(accessToken);
 
         // user pk로 유저 검색 / repo 에 저장된 Refresh Token 이 없음
-        User user = userJpaRepo.findById(Long.parseLong(authentication.getName()))
+        User user = userJpaRepo.findByUserIdx(Long.valueOf(tokenProvider.getUserPk(tokenProvider.resolveToken(request))))
                 .orElseThrow(CUserNotFoundException::new);
-        UserRefreshToken refreshToken = tokenJpaRepo.findByUserKey(user.getUserIdx())
+        UserRefreshToken refreshToken = (UserRefreshToken) tokenJpaRepo.findTop1ByUserKeyOrderByUpdatedAtDesc(user.getUserIdx())
                 .orElseThrow(CRefreshTokenException::new);
 
         // 리프레시 토큰 불일치 에러

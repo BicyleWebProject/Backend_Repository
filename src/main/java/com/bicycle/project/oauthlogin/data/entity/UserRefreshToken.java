@@ -17,11 +17,9 @@ public class UserRefreshToken extends  BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long refresh_token_id;
-//    private String id;
+    private Long refreshTokenId;
 
-
-    @Column(nullable = false) //userIdx 저장
+    @Column(nullable = false, unique = true) //userIdx 저장
     private Long userKey;
 
     @Column(nullable = false)
@@ -38,18 +36,4 @@ public class UserRefreshToken extends  BaseEntity{
         this.token = token;
     }
 
-//    @Override
-//    public String getStatus() {
-//        return super.getStatus();
-//    }
-//
-//    @Override
-//    public LocalDateTime getCreatedAt() {
-//        return super.getCreatedAt();
-//    }
-//
-//    @Override
-//    public LocalDateTime getUpdatedAt() {
-//        return super.getUpdatedAt();
-//    }
 }
