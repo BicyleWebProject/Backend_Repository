@@ -9,6 +9,8 @@ build/
 /src/main/resources/aws.yml
 /src/test
 
+
+
 ### STS ###
 .apt_generated
 .classpath

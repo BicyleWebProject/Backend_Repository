@@ -32,7 +32,7 @@ public class CommunityController {
 
     @GetMapping("/ctest")
     public String ctest(){
-        return "커뮤니티테스트 젠킨스 수정33302";
+        return "어뮤즈트레블 테스트";
     }
 
     @GetMapping("/topList")
